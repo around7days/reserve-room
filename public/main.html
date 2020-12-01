@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>会議室予約システム</title>
+
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- jquery ui -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/redmond/jquery-ui.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://rawgit.com/jquery/jquery-ui/master/ui/i18n/datepicker-ja.js"></script>
+
+    <!-- Bootstrap -->
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/yeti/bootstrap.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- momentjs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/ja.js"></script>
+
+    <!-- 独自 -->
+    <link rel="stylesheet" href="main.css" />
+    <script src="main.js"></script>
+  </head>
+  <body>
+    <!-- ヘッダ -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <span class="navbar-brand mb-0 h1">会議室予約システム</span>
+    </nav>
+
+    <div class="container-fluid" style="width: 1024px">
+      <div class="row">
+        <!-- サイドバー -->
+        <div class="col-3 side-content">
+          <div class="pt-4">
+            <!-- カレンダー -->
+            <h5>カレンダー</h5>
+            <div id="datepicker" style="transform: scale(0.9, 0.9); margin-top: -10px; margin-left: -30px"></div>
+            <div style="line-height: 5px"><br /></div>
+
+            <!-- 氏名選択 -->
+            <h5>表示設定</h5>
+            <div>
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="disp-user-all" checked />
+                <label class="form-check-label" for="disp-user-all">全選択/全解除</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="disp-user1" checked />
+                <label class="form-check-label" for="disp-user1">FS太郎</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="disp-user2" checked />
+                <label class="form-check-label" for="disp-user2">FS花子</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="disp-user3" checked />
+                <label class="form-check-label" for="disp-user3">FS次郎</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- メインコンテンツ -->
+        <div class="col-9 main-content">
+          <!-- スケジュール -->
+          <div class="pt-4">
+            <div class="d-inline">
+              <!-- 日付＋新規予約ボタン -->
+              <input type="hidden" id="targetDate" />
+              <h5 class="d-inline" id="targetDateNm"></h5>
+              &nbsp;&nbsp;
+              <button id="newBtn" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#inputCardInfo">新規予約</button>
+              &nbsp;&nbsp;
+              <button id="userSettingBtn" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#userSettingInfo">個人設定</button>
+            </div>
+            <table id="scheduleTable" class="table table-sm table-bordered">
+              <thead class="thead-dark"></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 予約情報入力フォームModal -->
+    <div class="modal fade" id="inputCardInfo" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">予約情報</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div id="message"></div>
+            <div>
+              <div class="form-row">
+                <input type="hidden" id="id" />
+                <div class="form-group col-4">
+                  <label class="col-form-label">氏名</label>
+                  <input type="text" class="form-control" id="userNm" />
+                </div>
+                <div class="form-group col">
+                  <label class="col-form-label">部署</label>
+                  <input type="text" class="form-control" id="deptNm" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-auto">
+                  <label class="col-form-label">会議室</label>
+                  <select class="form-control" id="roomId"></select>
+                </div>
+                <div class="form-group col">
+                  <label class="col-form-label">利用用途</label>
+                  <input type="text" class="form-control" id="reason" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-auto">
+                  <label class="col-form-label">日付</label>
+                  <input type="date" class="form-control" id="date" />
+                </div>
+                <div class="form-group col-auto">
+                  <label class="col-form-label">開始時刻</label>
+                  <select class="form-control" id="startTime"></select>
+                </div>
+                <div class="form-group col-auto">
+                  <label class="col-form-label">終了時刻</label>
+                  <select class="form-control" id="endTime"></select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-4">
+                  <label class="col-form-label">パスワード</label>
+                  <input type="password" class="form-control" id="password" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="cancelBtn" class="btn btn-primary">取消</button>
+            <button type="button" id="updateBtn" class="btn btn-primary">変更</button>
+            <button type="button" id="registBtn" class="btn btn-primary">登録</button>
+            <button type="button" id="copyBtn" class="btn btn-primary">複写</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /予約情報入力フォームModal -->
+
+    <!-- 個人設定入力フォームModal -->
+    <div class="modal fade" id="userSettingInfo" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalLabel">個人設定</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div>
+              <h6 class="modal-title" id="modalLabel">初期値設定</h6>
+              <div class="form-row">
+                <input type="hidden" id="id" />
+                <div class="form-group col-4">
+                  <label class="col-form-label">氏名</label>
+                  <input type="text" class="form-control" id="defUserNm" />
+                </div>
+                <div class="form-group col">
+                  <label class="col-form-label">部署</label>
+                  <input type="text" class="form-control" id="defDeptNm" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-4">
+                  <label class="col-form-label">パスワード</label>
+                  <input type="password" class="form-control" id="defPassword" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="saveBtn" class="btn btn-primary">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /入力フォームModal -->
+    
+  </body>
+</html>

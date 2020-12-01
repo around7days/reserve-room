@@ -1,0 +1,22 @@
+{
+  "name": "reserve-room",
+  "version": "1.0.0",
+  "description": "会議室予約システム",
+  "main": "app/app.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-validator": "^6.7.0",
+    "log4js": "^6.3.0",
+    "moment": "^2.29.1",
+    "sqlite3": "^5.0.0"
+  },
+  "devDependencies": {
+    "prettier": "2.2.1"
+  },
+  "scripts": {
+    "start": "nodemon src/app/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "hi-kabetani",
+  "license": "ISC"
+}

@@ -1,0 +1,7 @@
+{
+    "schedule_define" : {
+        "start_time" : "08:00",
+        "end_time" : "23:00",
+        "interval" : "30"
+    }
+}

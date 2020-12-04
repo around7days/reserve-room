@@ -2,6 +2,7 @@ const fs = require('fs');
 const moment = require('moment');
 const logger = require('./logger');
 const model = require('./model');
+const validator = require('./validator');
 
 module.exports = {
   /**
@@ -23,19 +24,25 @@ module.exports = {
    */
   doGetSetting: function (req, res, next) {
     let jsonData = JSON.parse(fs.readFileSync('./data/setting.json', 'utf8'));
-    res.json(jsonData);
+    return res.json(jsonData);
   },
 
   /**
    * 予約情報一覧の検索
    */
   doGetReservesSearch: function (req, res, next) {
+    const errors = validator.validationResult(req);
+    if (!errors.isEmpty()) {
+      logger.debug('errors:' + JSON.stringify(errors));
+      return res.json(errors);
+    }
+
     let dto = req.query;
 
     model
       .findReserveList(dto)
       .then((data) => {
-        res.json(data);
+        return res.json(data);
       })
       .catch((err) => {
         throw err;
@@ -45,13 +52,19 @@ module.exports = {
   /**
    * 予約情報の取得
    */
-  doGetReserve: function (req, res, next) {
+  doGetReserves: function (req, res, next) {
+    const errors = validator.validationResult(req);
+    if (!errors.isEmpty()) {
+      logger.debug('errors:' + JSON.stringify(errors));
+      return res.json(errors);
+    }
+
     let id = req.params.id;
 
     model
       .getReserveById(id)
       .then((data) => {
-        res.json(data);
+        return res.json(data);
       })
       .catch((err) => {
         throw err;
@@ -62,12 +75,18 @@ module.exports = {
    * 予約情報の登録
    */
   doPostReserve: function (req, res, next) {
+    const errors = validator.validationResult(req);
+    if (!errors.isEmpty()) {
+      logger.debug('errors:' + JSON.stringify(errors));
+      return res.json(errors);
+    }
+
     let dto = req.body;
 
     model
       .registReserve(dto)
       .then(() => {
-        res.json({});
+        return res.json({});
       })
       .catch((err) => {
         throw err;
@@ -78,6 +97,12 @@ module.exports = {
    * 予約情報の更新
    */
   doPutReserve: function (req, res, next) {
+    const errors = validator.validationResult(req);
+    if (!errors.isEmpty()) {
+      logger.debug('errors:' + JSON.stringify(errors));
+      return res.json(errors);
+    }
+
     let id = req.body.id;
     let password = req.body.password;
     let dto = req.body;
@@ -85,7 +110,7 @@ module.exports = {
     model
       .updateReserve(id, password, dto)
       .then(() => {
-        res.json({});
+        return res.json({});
       })
       .catch((err) => {
         throw err;
@@ -96,13 +121,19 @@ module.exports = {
    * 予約情報の取消
    */
   doDeleteReserve: function (req, res, next) {
+    const errors = validator.validationResult(req);
+    if (!errors.isEmpty()) {
+      logger.debug('errors:' + JSON.stringify(errors));
+      return res.json(errors);
+    }
+
     let id = req.body.id;
     let password = req.body.password;
 
     model
       .deleteReserve(id, password)
       .then(() => {
-        res.json({});
+        return res.json({});
       })
       .catch((err) => {
         throw err;

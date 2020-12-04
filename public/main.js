@@ -4,68 +4,42 @@ $(function () {
   // 当日日付の取得
   const SYSDATE = new moment();
 
-  /**
-   * 初期処理
-   */
+  /** 初期処理 */
   {
+    init();
+  }
+
+  /** 新規予約ボタン押下 */
+  $('#newBtn').on('click', setReserveFormNew);
+
+  /** 個人設定ボタン押下 */
+  $('#userSettingBtn').on('click', setUserSettingValue);
+
+  /** 予約情報フォーム：登録/複写ボタン押下 */
+  $('#registBtn, #copyBtn').on('click', execRegist);
+
+  /** 予約情報フォーム：変更ボタン押下 */
+  $('#updateBtn').on('click', execUpdate);
+
+  /** 予約情報フォーム：取消ボタン押下 */
+  $('#cancelBtn').on('click', execCancel);
+
+  /** 個人設定フォーム：保存ボタン押下 */
+  $('#saveBtn').on('click', saveUserSetting);
+
+  /** 初期処理 */
+  function init() {
     // 日付設定
     setTargetDate(SYSDATE);
-
     // カレンダー表示
     createCalender();
-
     // 予情報フォームの生成
     createReserveForm();
-
     // スケジュール生成
     createSchedule();
-
     // 予約カードの作成
     createCard(SYSDATE);
   }
-
-  /**
-   * 予約情報フォーム：登録/複写ボタン押下
-   */
-  $('#registBtn, #copyBtn').on('click', function () {
-    execRegist();
-  });
-
-  /**
-   * 新規予約ボタン押下
-   */
-  $('#newBtn').on('click', function () {
-    // 予約情報フォームの表示設定：新規予約
-    setReserveFormNew();
-  });
-
-  /**
-   * 予約情報フォーム：変更ボタン押下
-   */
-  $('#updateBtn').on('click', function () {
-    execUpdate();
-  });
-
-  /**
-   * 予約情報フォーム：取消ボタン押下
-   */
-  $('#cancelBtn').on('click', function () {
-    execCancel();
-  });
-
-  /**
-   * 個人設定ボタン押下
-   */
-  $('#userSettingBtn').on('click', function () {
-    setUserSettingValue();
-  });
-
-  /**
-   * 個人設定フォーム：保存ボタン押下
-   */
-  $('#saveBtn').on('click', function () {
-    saveUserSetting();
-  });
 
   /**
    * 個人設定保存処理
@@ -259,7 +233,6 @@ $(function () {
         moment(data['start_time']).format('HH:mm') +
         '～' +
         moment(data['end_time']).format('HH:mm') +
-        // + "<br>" + data['dept_nm']
         '<br>' +
         data['reason'];
       $card.find('.card-text').html(cardText);
@@ -349,6 +322,13 @@ $(function () {
       async: false,
     })
       .done((data) => {
+        if (data['errors']) {
+          // エラーメッセージの設定
+          setReserveFormValidate(data['errors']);
+          return;
+        }
+
+        // 結果返却
         jsonData = data;
       })
       .fail((res) => {
@@ -365,6 +345,7 @@ $(function () {
     let userSetting = getUserSetting();
 
     // 予約情報の初期値設定
+    setReserveFormValidate(null);
     $('#id').val('');
     $('#userNm').val(userSetting['def_user_nm']);
     $('#deptNm').val(userSetting['def_dept_nm']);
@@ -391,6 +372,7 @@ $(function () {
 
     // 予約情報のセット
     let data = JSON.parse($(ele).attr('data-reserve-info'));
+    setReserveFormValidate(null);
     $('#id').val(data['id']);
     $('#userNm').val(data['user_nm']);
     $('#deptNm').val(data['dept_nm']);
@@ -414,6 +396,25 @@ $(function () {
   }
 
   /**
+   * 予約情報フォームの表示設定：エラーメッセージ表示
+   */
+  function setReserveFormValidate(errors) {
+    // 初期化
+    $('#warningMessage').html('');
+    if (errors == null) {
+      return;
+    }
+
+    // エラーメッセージのセット
+    let $ol = $('<ul>');
+    errors.forEach((error) => {
+      let $li = $('<li>').text(error.msg);
+      $ol.append($li);
+    });
+    $('#warningMessage').append($ol).addClass('text-danger');
+  }
+
+  /**
    * 予約情報フォーム：登録処理
    */
   function execRegist() {
@@ -434,12 +435,19 @@ $(function () {
       async: false,
     })
       .done((data) => {
+        if (data['errors']) {
+          // エラーメッセージの設定
+          setReserveFormValidate(data['errors']);
+          return;
+        }
+
         // モーダルクローズ＋予約情報の再設定
         $('#inputCardInfo').modal('hide');
         createCard(getTargetDate());
       })
       .fail((res) => {
-        alert('予約情報の登録に失敗しました');
+        alert('システムエラーが発生しました。');
+        console.log(res);
       });
   }
 
@@ -465,12 +473,19 @@ $(function () {
       async: false,
     })
       .done((data) => {
+        if (data['errors']) {
+          // エラーメッセージの設定
+          setReserveFormValidate(data['errors']);
+          return;
+        }
+
         // モーダルクローズ＋予約情報の再設定
         $('#inputCardInfo').modal('hide');
         createCard(getTargetDate());
       })
       .fail((res) => {
-        alert('予約情報の変更に失敗しました');
+        alert('システムエラーが発生しました。');
+        console.log(res);
       });
   }
 
@@ -489,12 +504,19 @@ $(function () {
       async: false,
     })
       .done((data) => {
+        if (data['errors']) {
+          // エラーメッセージの設定
+          setReserveFormValidate(data['errors']);
+          return;
+        }
+
         // モーダルクローズ＋予約情報の再設定
         $('#inputCardInfo').modal('hide');
         createCard(getTargetDate());
       })
       .fail((res) => {
-        alert('予約情報の取消に失敗しました');
+        alert('システムエラーが発生しました。');
+        console.log(res);
       });
   }
 });

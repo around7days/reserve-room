@@ -6,3 +6,5 @@ module.exports = logger;
 
 test
 test
+
+操作A

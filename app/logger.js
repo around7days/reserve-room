@@ -8,3 +8,4 @@ logger.level = 'debug';
 module.exports = logger;
 
 test
+test

@@ -8,10 +8,10 @@ const logger = require('./logger');
 router.get('/rooms', controller.doGetRooms);
 /** 設定情報を取得するAPI */
 router.get('/setting', controller.doGetSetting);
+/** 予約情報（1件）を取得するAPI */
+router.get('/reserve/:id', validator.doGetReserveId, controller.doGetReserveId);
 /** 予約情報一覧を取得するAPI */
 router.get('/reserves/search', validator.doGetReservesSearch, controller.doGetReservesSearch);
-/** 予約情報を取得するAPI */
-router.get('/reserves/:id', validator.doGetReserves, controller.doGetReserves);
 /** 予約情報を登録するAPI */
 router.post('/reserve', validator.doPostReserve, controller.doPostReserve);
 /** 予約情報を変更するAPI */

@@ -217,8 +217,9 @@ $(function () {
 
     // 予約情報からカードを作成してスケジュールにセット
     reserveJson.forEach((data) => {
-      // 予約カードの作成
-      let $card = $(`
+      try {
+        // 予約カードの作成
+        let $card = $(`
                 <div class="card reserve-card overflow-hidden" data-toggle="modal" data-target="#inputCardInfo">
                     <div class="card-body">
                         <p class="card-text"></p>
@@ -226,40 +227,53 @@ $(function () {
                 </div>
             `);
 
-      // 予約カードのラベル表示＋吹き出しを設定
-      let cardText =
-        data['user_nm'] +
-        '<br>' +
-        moment(data['start_time']).format('HH:mm') +
-        '～' +
-        moment(data['end_time']).format('HH:mm') +
-        '<br>' +
-        data['reason'];
-      $card.find('.card-text').html(cardText);
-      $card.attr('title', cardText);
-      $card.tooltip({ html: true, trigger: 'hover' });
-      // 予約カードに全情報を埋め込む
-      $card.attr('data-reserve-info', JSON.stringify(data));
+        // 予約カードのラベル表示＋吹き出しを設定
+        let cardText =
+          data['user_nm'] +
+          '<br>' +
+          moment(data['start_time']).format('HH:mm') +
+          '～' +
+          moment(data['end_time']).format('HH:mm') +
+          '<br>' +
+          data['reason'];
+        $card.find('.card-text').html(cardText);
+        $card.attr('title', cardText);
+        $card.tooltip({ html: true, trigger: 'hover' });
+        // 予約カードに全情報を埋め込む
+        $card.attr('data-reserve-info', JSON.stringify(data));
 
-      // 予約カードのクリックイベントを設定（予約情報フォームの表示設定：予約変更）
-      $card.on('click', function () {
-        setReserveFormUpdate($card);
-      });
+        // 予約カードのクリックイベントを設定（予約情報フォームの表示設定：予約変更）
+        $card.on('click', function () {
+          setReserveFormUpdate($card);
+        });
 
-      // 対象オブジェクトの取得
-      let $startTd = $('#' + data['room_id'] + '-' + moment(data['start_time']).format('HHmm'));
-      let $endTd = $('#' + data['room_id'] + '-' + moment(data['end_time']).format('HHmm'));
+        // 対象オブジェクトの取得
+        let $startTd = $('#' + data['room_id'] + '-' + moment(data['start_time']).format('HHmm'));
+        let $endTd = $('#' + data['room_id'] + '-' + moment(data['end_time']).format('HHmm'));
 
-      // カードサイズの設定
-      let width = $startTd.width();
-      let top = $startTd.offset().top;
-      let bottom = $endTd.offset().top + $endTd.height() - $endTd.outerHeight(true);
-      let height = bottom - top;
-      $card.css('width', width);
-      $card.css('height', height);
+        // カードサイズの設定
+        let width = $startTd.width();
+        let top = $startTd.offset().top;
+        let bottom;
+        if ($endTd.length > 0) {
+          bottom = $endTd.offset().top + $endTd.height() - $endTd.outerHeight(true);
+        } else {
+          bottom =
+            $('#scheduleTable tbody').offset().top + //
+            $('#scheduleTable tbody').height() + //
+            $startTd.height() - //
+            $startTd.outerHeight(true);
+        }
+        let height = bottom - top;
+        $card.css('width', width);
+        $card.css('height', height);
 
-      // スケジュールに追加
-      $startTd.append($card);
+        // スケジュールに追加
+        $startTd.append($card);
+      } catch (e) {
+        alert('正しく表示出来ない予約情報が存在します。システム管理者に問い合わせください。\r\n' + JSON.stringify(data));
+        console.log('エラー予約情報：' + JSON.stringify(data));
+      }
     });
   }
 

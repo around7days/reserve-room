@@ -4,139 +4,159 @@ const logger = require('./logger');
 const model = require('./model');
 const validator = require('./validator');
 
-module.exports = {
-  /**
-   * 会議室一の取得
-   */
-  doGetRooms: function (req, res, next) {
-    model
-      .getRoomList()
-      .then((data) => {
-        res.json(data);
-      })
-      .catch((err) => {
-        throw err;
-      });
-  },
+/**
+ * 予約情報の重複チェック<br>
+ * 予約IDの指定がある場合は予約IDに紐づく予約は除外して重複チェックを行う。
+ * @param roomId
+ * @param strDate
+ * @param strFromDate
+ * @param strToDate
+ * @param id
+ * @returns 結果[true:重複あり]
+ */
+async function isDuplicateReserve(dto) {
+  let roomId = dto['room_id'];
+  let startDateTime = dto['date'] + ' ' + dto['start_time'];
+  let endDateTime = dto['date'] + ' ' + dto['end_time'];
+  let id = dto['id'];
+  let isDuplicate = await model.isDuplicateReserve(roomId, startDateTime, endDateTime, id);
+  return isDuplicate;
+}
 
+module.exports = {
   /**
    * 設定情報の取得
    */
   doGetSetting: function (req, res, next) {
-    let jsonData = JSON.parse(fs.readFileSync('./data/setting.json', 'utf8'));
-    return res.json(jsonData);
+    let data = JSON.parse(fs.readFileSync('./data/setting.json', 'utf8'));
+    return res.json(data);
+  },
+
+  /**
+   * 会議室一の取得
+   */
+  doGetRooms: async function (req, res, next) {
+    let data = await model.getRoomList();
+    return res.json(data);
+  },
+
+  /**
+   * 予約情報の取得（1件）
+   */
+  doGetReserveId: async function (req, res, next) {
+    // 単項目チェック
+    const errors = validator.validationResult(req);
+    if (!errors.isEmpty()) {
+      logger.debug('errors:' + JSON.stringify(errors));
+      return res.json(errors);
+    }
+
+    // メイン処理
+    let id = req.params.id;
+    let data = await model.getReserveById(id);
+
+    // 結果返却
+    return res.json(data);
   },
 
   /**
    * 予約情報一覧の検索
    */
-  doGetReservesSearch: function (req, res, next) {
+  doGetReservesSearch: async function (req, res, next) {
+    // 単項目チェック
     const errors = validator.validationResult(req);
     if (!errors.isEmpty()) {
       logger.debug('errors:' + JSON.stringify(errors));
       return res.json(errors);
     }
 
+    // メイン処理
     let dto = req.query;
+    let data = await model.findReserveList(dto);
 
-    model
-      .findReserveList(dto)
-      .then((data) => {
-        return res.json(data);
-      })
-      .catch((err) => {
-        throw err;
-      });
-  },
-
-  /**
-   * 予約情報の取得
-   */
-  doGetReserves: function (req, res, next) {
-    const errors = validator.validationResult(req);
-    if (!errors.isEmpty()) {
-      logger.debug('errors:' + JSON.stringify(errors));
-      return res.json(errors);
-    }
-
-    let id = req.params.id;
-
-    model
-      .getReserveById(id)
-      .then((data) => {
-        return res.json(data);
-      })
-      .catch((err) => {
-        throw err;
-      });
+    // 結果返却
+    return res.json(data);
   },
 
   /**
    * 予約情報の登録
    */
-  doPostReserve: function (req, res, next) {
+  doPostReserve: async function (req, res, next) {
+    // 単項目チェック
     const errors = validator.validationResult(req);
     if (!errors.isEmpty()) {
       logger.debug('errors:' + JSON.stringify(errors));
       return res.json(errors);
     }
 
+    // パラメータ
     let dto = req.body;
 
-    model
-      .registReserve(dto)
-      .then(() => {
-        return res.json({});
-      })
-      .catch((err) => {
-        throw err;
-      });
+    // 独自チェック
+    let isDuplicate = await isDuplicateReserve(dto);
+    if (isDuplicate) {
+      errors['errors'] = [{ msg: '既に他の予約情報が登録されています' }];
+      logger.debug('errors:' + JSON.stringify(errors));
+      return res.json(errors);
+    }
+
+    // メイン処理
+    await model.registReserve(dto);
+
+    // 結果返却
+    return res.json({});
   },
 
   /**
    * 予約情報の更新
    */
-  doPutReserve: function (req, res, next) {
+  doPutReserve: async function (req, res, next) {
+    // 単項目チェック
     const errors = validator.validationResult(req);
     if (!errors.isEmpty()) {
       logger.debug('errors:' + JSON.stringify(errors));
       return res.json(errors);
     }
 
+    // パラメータ
     let id = req.body.id;
     let password = req.body.password;
     let dto = req.body;
 
-    model
-      .updateReserve(id, password, dto)
-      .then(() => {
-        return res.json({});
-      })
-      .catch((err) => {
-        throw err;
-      });
+    // 独自チェック
+    let isDuplicate = await isDuplicateReserve(dto);
+    if (isDuplicate) {
+      errors['errors'] = [{ msg: '既に他の予約情報が登録されています' }];
+      logger.debug('errors:' + JSON.stringify(errors));
+      return res.json(errors);
+    }
+
+    // メイン処理
+    await model.updateReserve(id, password, dto);
+
+    // 結果返却
+    return res.json({});
   },
 
   /**
    * 予約情報の取消
    */
-  doDeleteReserve: function (req, res, next) {
+  doDeleteReserve: async function (req, res, next) {
+    // 単項目チェック
     const errors = validator.validationResult(req);
     if (!errors.isEmpty()) {
       logger.debug('errors:' + JSON.stringify(errors));
       return res.json(errors);
     }
 
+    // パラメータ
     let id = req.body.id;
     let password = req.body.password;
 
-    model
-      .deleteReserve(id, password)
-      .then(() => {
-        return res.json({});
-      })
-      .catch((err) => {
-        throw err;
-      });
+    // メイン処理
+    await model.deleteReserve(id, password);
+
+    // 結果返却
+    return res.json({});
   },
 };

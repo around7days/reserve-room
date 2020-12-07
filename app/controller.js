@@ -7,11 +7,6 @@ const validator = require('./validator');
 /**
  * 予約情報の重複チェック<br>
  * 予約IDの指定がある場合は予約IDに紐づく予約は除外して重複チェックを行う。
- * @param roomId
- * @param strDate
- * @param strFromDate
- * @param strToDate
- * @param id
  * @returns 結果[true:重複あり]
  */
 async function isDuplicateReserve(dto) {
@@ -92,7 +87,7 @@ module.exports = {
     // パラメータ
     let dto = req.body;
 
-    // 独自チェック
+    // 独自チェック（予約情報の重複チェック）
     let isDuplicate = await isDuplicateReserve(dto);
     if (isDuplicate) {
       errors['errors'] = [{ msg: '既に他の予約情報が登録されています' }];
@@ -123,7 +118,15 @@ module.exports = {
     let password = req.body.password;
     let dto = req.body;
 
-    // 独自チェック
+    // 独自チェック（予約情報のパスワード一致チェック）
+    let isAuth = await model.isAuthReserve(id, password);
+    if (!isAuth) {
+      errors['errors'] = [{ msg: 'パスワードが一致しません' }];
+      logger.debug('errors:' + JSON.stringify(errors));
+      return res.json(errors);
+    }
+
+    // 独自チェック（予約情報の重複チェック）
     let isDuplicate = await isDuplicateReserve(dto);
     if (isDuplicate) {
       errors['errors'] = [{ msg: '既に他の予約情報が登録されています' }];
@@ -132,7 +135,7 @@ module.exports = {
     }
 
     // メイン処理
-    await model.updateReserve(id, password, dto);
+    await model.updateReserve(id, dto);
 
     // 結果返却
     return res.json({});
@@ -153,8 +156,16 @@ module.exports = {
     let id = req.body.id;
     let password = req.body.password;
 
+    // 独自チェック（予約情報のパスワード一致チェック）
+    let isAuth = await model.isAuthReserve(id, password);
+    if (!isAuth) {
+      errors['errors'] = [{ msg: 'パスワードが一致しません' }];
+      logger.debug('errors:' + JSON.stringify(errors));
+      return res.json(errors);
+    }
+
     // メイン処理
-    await model.deleteReserve(id, password);
+    await model.deleteReserve(id);
 
     // 結果返却
     return res.json({});

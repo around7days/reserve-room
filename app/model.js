@@ -24,11 +24,11 @@ module.exports = {
   getRoomList: async function () {
     // SQL生成
     let sql = `
-              select room_id, room_nm
-              from m_room
-              where del_flg = 0
-              order by sort
-              `;
+      select room_id, room_nm
+      from m_room
+      where del_flg = 0
+      order by sort
+    `;
 
     // SQL実行
     let rows = await util.promisify(db.all).bind(db)(sql);
@@ -73,15 +73,14 @@ module.exports = {
 
     // SQL生成
     let sql = `
-                select *
-                from v_room_reserve
-                where 
-                  1 = 1
-                  ${addWhere}
-                order by
-                  room_id
-                    , start_time
-                `;
+      select *
+      from v_room_reserve
+      where 
+        1 = 1
+        ${addWhere}
+      order by
+        room_id, start_time
+    `;
 
     // SQL実行
     let rows = await util.promisify(db.all).bind(db)(sql, param);
@@ -96,10 +95,10 @@ module.exports = {
   getReserveById: async function (id) {
     // SQL生成
     let sql = `
-              select *
-              from v_room_reserve
-              where id = $id
-              `;
+      select *
+      from v_room_reserve
+      where id = $id
+    `;
 
     // SQLパラメータ
     let param = { $id: id };
@@ -136,21 +135,43 @@ module.exports = {
 
     // SQL生成
     let sql = `
-              select count(*) as cnt
-              from v_room_reserve 
-              where
-                1 = 1 
-                and room_id = $room_id
-                and ( 
-                  datetime($start_time) between start_time and end_time 
-                  or datetime($end_time) between start_time and end_time
-                )
-                and datetime($start_time) != end_time
-                and datetime($end_time) != start_time
-                ${addWhere}
-              `;
+      select count(*) as cnt
+      from v_room_reserve 
+      where
+        1 = 1 
+        and room_id = $room_id
+        and ( 
+          datetime($start_time) between start_time and end_time 
+          or datetime($end_time) between start_time and end_time
+        )
+        and datetime($start_time) != end_time
+        and datetime($end_time) != start_time
+        ${addWhere}
+    `;
 
     // SQL実行
+    let row = await util.promisify(db.get).bind(db)(sql, param);
+    return row.cnt > 0;
+  },
+
+  /**
+   * 予約情報のパスワード認証チェック
+   * @param id 予約ID
+   * @param password パスワード
+   * @returns 結果[true:権限あり、false：権限無し]
+   */
+  isAuthReserve: async function (id, password) {
+    // SQL生成
+    let sql = `
+      select count(*) as cnt
+      from t_room_reserve
+      where id = $id
+      and password = $password
+    `;
+
+    // SQLパラメータ
+    let param = { $id: id, $password: password };
+
     let row = await util.promisify(db.get).bind(db)(sql, param);
     return row.cnt > 0;
   },
@@ -162,11 +183,11 @@ module.exports = {
   registReserve: async function (dto) {
     // SQL生成
     let sql = `
-              insert into t_room_reserve
-                  (user_nm, dept_nm, reason, room_id, start_time, end_time, password, ins_date, upd_date, del_flg)
-              values
-                  ($user_nm, $dept_nm, $reason, $room_id, datetime($start_time), datetime($end_time), $password, datetime('now', 'localtime'), datetime('now', 'localtime'), 0);
-              `;
+      insert into t_room_reserve
+          (user_nm, dept_nm, reason, room_id, start_time, end_time, password, ins_date, upd_date, del_flg)
+      values
+          ($user_nm, $dept_nm, $reason, $room_id, datetime($start_time), datetime($end_time), $password, datetime('now', 'localtime'), datetime('now', 'localtime'), 0);
+    `;
 
     // SQLパラメータ
     let param = {
@@ -186,24 +207,23 @@ module.exports = {
   /**
    * 予約情報の変更
    * @param id 予約ID
-   * @param password パスワード
    * @param dto 変更情報
    */
-  updateReserve: async function (id, password, dto) {
+  updateReserve: async function (id, dto) {
     // SQL生成
     let sql = `
-              update t_room_reserve 
-              set
-                  user_nm = $user_nm
-                  , dept_nm = $dept_nm
-                  , reason = $reason
-                  , room_id = $room_id
-                  , start_time = $start_time
-                  , end_time = $end_time
-                  , upd_date = datetime('now', 'localtime')
-              where
-                  id = $id
-              `;
+      update t_room_reserve 
+      set
+          user_nm = $user_nm
+          , dept_nm = $dept_nm
+          , reason = $reason
+          , room_id = $room_id
+          , start_time = $start_time
+          , end_time = $end_time
+          , upd_date = datetime('now', 'localtime')
+      where
+          id = $id
+      `;
 
     // SQLパラメータ
     let param = {
@@ -224,18 +244,17 @@ module.exports = {
   /**
    * 予約情報を取消するAPI
    * @param id 予約ID
-   * @param password パスワード
    */
-  deleteReserve: async function (id, password) {
+  deleteReserve: async function (id) {
     // SQL生成
     let sql = `
-              update t_room_reserve 
-              set
-                  del_flg = 1
-                  , upd_date = datetime('now')
-              where
-                  id = $id
-              `;
+      update t_room_reserve 
+      set
+          del_flg = 1
+          , upd_date = datetime('now')
+      where
+          id = $id
+    `;
 
     // SQLパラメータ
     let param = {

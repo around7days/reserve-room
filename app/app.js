@@ -10,12 +10,12 @@ const router = require('./router');
 const logger = require('./logger');
 
 /* サーバを3000番ポート待ち受け */
-const server = app.listen(port, function () {
+const server = app.listen(port, () => {
   logger.info('Node.js is listening to PORT:' + server.address().port);
 });
 
 /* CORSを許可する */
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
@@ -30,7 +30,6 @@ app.use('/', router);
 app.use(express.static(path.join(__dirname, '../public')));
 
 /* アクセスログ設定 */
-const accessLogger = log4js.getLogger('access');
-app.use(log4js.connectLogger(accessLogger, { level: 'auto' }));
+app.use(log4js.connectLogger(logger));
 
 module.exports = app;

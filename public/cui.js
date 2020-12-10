@@ -6,23 +6,24 @@ $(function () {
   $('#sendBtn').on('click', doSend);
 
   function doSend() {
-    console.log('send');
-    let jsonData = $('#url').val();
-    if (jsonData == '') {
-      jsonData = '{}';
+    let jsonData = null;
+    if ($('#reqData').val() != '') {
+      jsonData = JSON.parse($('#reqData').val());
     }
 
     $.ajax({
-      url: SERVER_URL + url,
+      url: SERVER_URL + $('#url').val(),
       type: $('#type').val(),
       dataType: 'json',
-      data: JSON.parse($('#reqData').val()),
+      data: jsonData,
       async: false,
     })
       .done((data) => {
+        console.log(data);
         $('#resData').val(JSON.stringify(data));
       })
       .fail((res) => {
+        console.log(res);
         $('#resData').val('システムエラーが発生しました。\r\n' + JSON.stringify(res));
       });
   }

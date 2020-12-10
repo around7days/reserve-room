@@ -40,7 +40,13 @@
       <div class="form-row">
         <div class="form-group col-2">
           <label class="col-form-label">HTTPメソッド</label>
-          <input type="text" class="form-control" id="type" />
+          <input type="text" class="form-control" id="type" list="typeList" />
+          <datalist id="typeList">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="DELETE">DELETE</option>
+          </datalist>
         </div>
         <div class="form-group col-6">
           <label class="col-form-label">URL</label>
@@ -63,7 +69,7 @@
       <div class="form-row">
         <div class="form-group col-8">
           <label class="col-form-label">結果</label>
-          <textarea class="form-control" id="resData" rows="5"></textarea>
+          <textarea class="form-control" id="resData" rows="8"></textarea>
         </div>
       </div>
     </div>

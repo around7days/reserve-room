@@ -13,7 +13,7 @@ function isDate(value, format) {
   if (!value) {
     return true;
   }
-  return moment(value, format).isValid();
+  return moment(value, format, true).isValid();
 }
 
 /**

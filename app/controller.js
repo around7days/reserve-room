@@ -49,6 +49,9 @@ module.exports = {
     // メイン処理
     let id = req.params.id;
     let data = await model.getReserveById(id);
+    if (!data) {
+      return res.json({});
+    }
 
     // 結果返却
     return res.json(data);

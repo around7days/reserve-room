@@ -27,9 +27,10 @@
     <!-- 独自 -->
     <link rel="stylesheet" href="main.css" />
     <script src="./main.js"></script>
+    <script src="./com/apiUtil.js"></script>
     <script src="./com/reserveCard.js"></script>
     <script src="./com/userSettingForm.js"></script>
-    <script src="./com/apiUtil.js"></script>
+    <script src="./com/reserveForm.js"></script>
   </head>
   <body>
     <!-- ヘッダ -->
@@ -102,73 +103,9 @@
     </div>
 
     <!-- 予約情報入力フォームModal -->
-    <div class="modal fade" id="inputCardInfo" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">予約情報</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div id="warningMessage"></div>
-            <div>
-              <div class="form-row">
-                <input type="hidden" id="id" />
-                <div class="form-group col-4">
-                  <label class="col-form-label">氏名</label>
-                  <input type="text" class="form-control" id="userNm" />
-                </div>
-                <div class="form-group col">
-                  <label class="col-form-label">部署</label>
-                  <input type="text" class="form-control" id="deptNm" />
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group col-auto">
-                  <label class="col-form-label">会議室</label>
-                  <select class="form-control" id="roomId"></select>
-                </div>
-                <div class="form-group col">
-                  <label class="col-form-label">利用用途</label>
-                  <input type="text" class="form-control" id="reason" />
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group col-auto">
-                  <label class="col-form-label">日付</label>
-                  <input type="date" class="form-control" id="date" />
-                </div>
-                <div class="form-group col-auto">
-                  <label class="col-form-label">開始時刻</label>
-                  <select class="form-control" id="startTime"></select>
-                </div>
-                <div class="form-group col-auto">
-                  <label class="col-form-label">終了時刻</label>
-                  <select class="form-control" id="endTime"></select>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group col-4">
-                  <label class="col-form-label">パスワード</label>
-                  <input type="password" class="form-control" id="password" />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" id="cancelBtn" class="btn btn-primary">取消</button>
-            <button type="button" id="updateBtn" class="btn btn-primary">変更</button>
-            <button type="button" id="registBtn" class="btn btn-primary">登録</button>
-            <button type="button" id="copyBtn" class="btn btn-primary">複写</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- /予約情報入力フォームModal -->
+    <div id="reserveFormArea"></div>
 
     <!-- 個人設定入力フォームModal -->
-    <div id="userSettingArea"></div>
+    <div id="userSettingFormArea"></div>
   </body>
 </html>

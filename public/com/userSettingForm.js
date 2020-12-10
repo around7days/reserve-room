@@ -14,7 +14,7 @@ class UserSettingForm {
    */
   create() {
     this.$form = $(`
-      <div class="modal fade" id="userSettingForm" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+      <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
@@ -55,8 +55,7 @@ class UserSettingForm {
     // 保存ボタンイベント設定
     this.$form.find('[data-id=saveBtn]').on('click', () => {
       let data = this.getDataByForm();
-      this.saveDataByStorage(data);
-      this.hide();
+      this.saveDataByStorage(data).hide();
     });
 
     return this;

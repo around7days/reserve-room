@@ -95,7 +95,7 @@ $(function () {
    */
   function createUserSetting() {
     let $userSettingForm = usForm.create().get();
-    $('#userSettingArea').append($userSettingForm);
+    $('#userSettingFormArea').append($userSettingForm);
   }
 
   /**

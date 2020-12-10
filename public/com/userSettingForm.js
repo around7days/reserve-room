@@ -51,16 +51,15 @@ class UserSettingForm {
         </div>
       </div>
     `);
-    return this;
-  }
 
-  /**
-   * 保存ボタン押下イベント
-   */
-  clickSaveBtn() {
-    let data = this.getDataByForm();
-    this.saveDataByStorage(data);
-    this.hide();
+    // 保存ボタンイベント設定
+    this.$form.find('[data-id=saveBtn]').on('click', () => {
+      let data = this.getDataByForm();
+      this.saveDataByStorage(data);
+      this.hide();
+    });
+
+    return this;
   }
 
   /**
@@ -102,9 +101,9 @@ class UserSettingForm {
    * @returns 自身のクラス
    */
   saveDataByStorage(data) {
-    localStorage.setItem('user_setting#def_user_nm', data('def_user_nm'));
-    localStorage.setItem('user_setting#def_dept_nm', data('def_dept_nm'));
-    localStorage.setItem('user_setting#def_password', data('def_password'));
+    localStorage.setItem('user_setting#def_user_nm', data['def_user_nm']);
+    localStorage.setItem('user_setting#def_dept_nm', data['def_dept_nm']);
+    localStorage.setItem('user_setting#def_password', data['def_password']);
     return this;
   }
 
@@ -126,7 +125,7 @@ class UserSettingForm {
    * @param data 個人情報
    */
   show() {
-    $form.modal('show');
+    this.$form.modal('show');
     return this;
   }
 
@@ -135,9 +134,9 @@ class UserSettingForm {
    * @param data 個人情報
    */
   hide() {
-    $form.modal('hide');
+    this.$form.modal('hide');
     return this;
   }
 }
 
-const userSettingForm = new UserSettingForm();
+const usForm = new UserSettingForm();

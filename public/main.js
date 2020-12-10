@@ -23,9 +23,6 @@ $(function () {
   /** 予約情報フォーム：取消ボタン押下 */
   $('#cancelBtn').on('click', execReserveCancel);
 
-  /** 個人設定フォーム：保存ボタン押下 */
-  $('#saveBtn').on('click', saveUserSetting);
-
   /** カレンダー：クリック */
   var dragFlg = false;
   var $dragCard;
@@ -66,44 +63,12 @@ $(function () {
     createCalender();
     // 予情報フォームの生成
     createReserveForm();
+    // 個人情報設定フォームの生成
+    createUserSettingForm();
     // スケジュール生成
     createSchedule();
     // 予約カードの作成
     createCardAll(SYSDATE);
-  }
-
-  /**
-   * 個人設定保存処理
-   */
-  function saveUserSetting() {
-    // ローカルストレージに保存
-    localStorage.setItem('def_user_nm', $('#defUserNm').val());
-    localStorage.setItem('def_dept_nm', $('#defDeptNm').val());
-    localStorage.setItem('def_password', $('#defPassword').val());
-    $('#userSettingInfo').modal('hide');
-  }
-
-  /**
-   * 個人設定取得処理
-   */
-  function getUserSetting() {
-    // ローカルストレージから取得
-    let userSetting = {
-      def_user_nm: localStorage.getItem('def_user_nm'),
-      def_dept_nm: localStorage.getItem('def_dept_nm'),
-      def_password: localStorage.getItem('def_password'),
-    };
-    return userSetting;
-  }
-
-  /**
-   *個人設定モーダルの表示処理
-   */
-  function showUserSettingForm() {
-    $('#defUserNm').val(localStorage.getItem('def_user_nm'));
-    $('#defDeptNm').val(localStorage.getItem('def_dept_nm'));
-    $('#defPassword').val(localStorage.getItem('def_password'));
-    $('#userSettingInfo').modal('show');
   }
 
   /**
@@ -123,6 +88,22 @@ $(function () {
         createCardAll(getTargetDate());
       },
     });
+  }
+
+  /**
+   * 個人情報設定フォームの生成
+   */
+  function createUserSetting() {
+    let $userSettingForm = usForm.create().get();
+    $('#userSettingArea').append($userSettingForm);
+  }
+
+  /**
+   * 個人情報設定フォームの表示
+   */
+  function showUserSettingForm() {
+    let data = usForm.getDataByStorage();
+    usForm.setDataByForm(data).show();
   }
 
   /**
@@ -302,7 +283,7 @@ $(function () {
    */
   function showReserveFormNew() {
     // 個人設定の取得
-    let userSetting = getUserSetting();
+    let userSetting = usForm.getDataByStorage();
 
     // 予約情報の初期値設定
     setReserveFormValidate(null);
@@ -336,7 +317,7 @@ $(function () {
    */
   function setReserveFormUpdate(data) {
     // 個人設定の取得
-    let userSetting = getUserSetting();
+    let userSetting = usForm.getDataByStorage();
 
     // 予約情報のセット
     setReserveFormValidate(null);

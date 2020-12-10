@@ -15,7 +15,7 @@ class ReserveCard {
 
   /**
    * 予約カードエレメントの生成
-   * @returns 予約カードクラス
+   * @returns 自身のクラス
    */
   create() {
     this.$card = $(`
@@ -39,7 +39,7 @@ class ReserveCard {
   /**
    * 予約情報をセット
    * @param data 予約情報
-   * @returns 予約カードクラス
+   * @returns 自身のクラス
    */
   setData(data) {
     // 予約カードに表示する値の生成
@@ -75,7 +75,7 @@ class ReserveCard {
    * 縦横セット
    * @param width 横幅(px)
    * @param height 縦幅(px)
-   * @returns 予約カードクラス
+   * @returns 自身のクラス
    */
   setSize(width, height) {
     this.$card.css('width', width);
@@ -86,7 +86,7 @@ class ReserveCard {
   /**
    * 横幅セット
    * @param width 横幅(px)
-   * @returns 予約カードクラス
+   * @returns 自身のクラス
    */
   setWidth(width) {
     this.$card.css('width', width);
@@ -96,7 +96,7 @@ class ReserveCard {
   /**
    * 縦幅セット
    * @param height 縦幅(px)
-   * @returns 予約カードクラス
+   * @returns 自身のクラス
    */
   setHeight(height) {
     this.$card.css('height', height);
@@ -107,7 +107,7 @@ class ReserveCard {
    * イベントをセット
    * @param event イベント
    * @param callback コールバック関数
-   * @returns 予約カードクラス
+   * @returns 自身のクラス
    */
   setEvent(event, callbackFnc) {
     this.$card.on(event, callbackFnc);

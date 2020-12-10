@@ -1,31 +1,62 @@
 $(function () {
   /** サーバURL */
-  const SERVER_URL = '';
+  // const SERVER_URL = '';
+  const SERVER_URL = 'http://localhost:3000';
   // 当日日付の取得
   const SYSDATE = new moment();
 
   /** 初期処理 */
-  {
-    init();
-  }
+  init();
 
   /** 新規予約ボタン押下 */
-  $('#newBtn').on('click', setReserveFormNew);
+  $('#newBtn').on('click', showReserveFormNew);
 
   /** 個人設定ボタン押下 */
-  $('#userSettingBtn').on('click', setUserSettingValue);
+  $('#userSettingBtn').on('click', showUserSettingForm);
 
   /** 予約情報フォーム：登録/複写ボタン押下 */
-  $('#registBtn, #copyBtn').on('click', execRegist);
+  $('#registBtn, #copyBtn').on('click', execReserveRegist);
 
   /** 予約情報フォーム：変更ボタン押下 */
-  $('#updateBtn').on('click', execUpdate);
+  $('#updateBtn').on('click', execReserveUpdate);
 
   /** 予約情報フォーム：取消ボタン押下 */
-  $('#cancelBtn').on('click', execCancel);
+  $('#cancelBtn').on('click', execReserveCancel);
 
   /** 個人設定フォーム：保存ボタン押下 */
   $('#saveBtn').on('click', saveUserSetting);
+
+  /** カレンダー：クリック */
+  var dragFlg = false;
+  var $dragCard;
+  $('#scheduleTable tbody td').on('mousedown', doMousedown);
+  // $('#scheduleTable tbody td').on('mousemove', mousemove);
+  $('#scheduleTable tbody td').on('mouseover', mousemove);
+  $('#scheduleTable tbody td').on('mouseup', doMouseup);
+
+  function doMousedown() {
+    dragFlg = true;
+    console.log('down:' + $(this).attr('id'));
+    let data = {
+      room_id: 3,
+      user_nm: '太郎',
+      start_time: '2020-12-09 08:30:00',
+      end_time: '2020-12-09 10:00:00',
+      reason: 'テスト理由',
+    };
+    // $dragCard = createCard(data);
+  }
+  function mousemove() {
+    if (!dragFlg) {
+      return;
+    }
+    console.log('move:' + $(this).attr('id'));
+  }
+  function doMouseup() {
+    dragFlg = false;
+    // $dragCard.remove();
+    console.log('up  :' + $(this).attr('id'));
+  }
 
   /** 初期処理 */
   function init() {
@@ -38,7 +69,7 @@ $(function () {
     // スケジュール生成
     createSchedule();
     // 予約カードの作成
-    createCard(SYSDATE);
+    createCardAll(SYSDATE);
   }
 
   /**
@@ -66,12 +97,13 @@ $(function () {
   }
 
   /**
-   *個人設定モーダルの値設定
+   *個人設定モーダルの表示処理
    */
-  function setUserSettingValue() {
+  function showUserSettingForm() {
     $('#defUserNm').val(localStorage.getItem('def_user_nm'));
     $('#defDeptNm').val(localStorage.getItem('def_dept_nm'));
     $('#defPassword').val(localStorage.getItem('def_password'));
+    $('#userSettingInfo').modal('show');
   }
 
   /**
@@ -88,7 +120,7 @@ $(function () {
         // 日付の再設定
         setTargetDate(moment(dateText));
         // 予約カードの再作成
-        createCard(getTargetDate());
+        createCardAll(getTargetDate());
       },
     });
   }
@@ -115,7 +147,7 @@ $(function () {
    */
   function createReserveForm() {
     // 会議室のリストボックス設定
-    let roomJson = getRoomList();
+    let roomJson = ApiUtil.getRoomList();
     $('#roomId').append($('<option>'));
     roomJson.forEach((data) => {
       let $option = $('<option>').val(data['room_id']).text(data['room_nm']);
@@ -123,7 +155,7 @@ $(function () {
     });
 
     // スケジュール定義情報の取得
-    let scheduleDefineJson = getScheduleDefine();
+    let scheduleDefineJson = ApiUtil.getScheduleDefine();
     let startTime = moment(scheduleDefineJson['start_time'], 'HH:mm');
     let endTime = moment(scheduleDefineJson['end_time'], 'HH:mm');
     let interval = scheduleDefineJson['interval'];
@@ -148,10 +180,10 @@ $(function () {
     const $table = $('#scheduleTable');
 
     // 会議室一覧の取得
-    let roomJson = getRoomList();
+    let roomJson = ApiUtil.getRoomList();
 
     // スケジュール定義情報の取得
-    let scheduleDefineJson = getScheduleDefine();
+    let scheduleDefineJson = ApiUtil.getScheduleDefine();
     let startTime = moment(scheduleDefineJson['start_time'], 'HH:mm');
     let endTime = moment(scheduleDefineJson['end_time'], 'HH:mm');
     let interval = scheduleDefineJson['interval'];
@@ -188,7 +220,7 @@ $(function () {
 
         // 会議室列の追加
         roomJson.forEach((data) => {
-          let timeRoomId = data['room_id'] + '-' + time.format('HHmm'); // 会議室ID + "-" + 時刻(HHmm)
+          let timeRoomId = data['room_id'] + '-' + time.format('YYYYMMDDHHmm'); // 会議室ID + "-" + 時刻(HHmm)
           let $timeRoomTd = $('<td>').attr('id', timeRoomId);
           $tr.append($timeRoomTd);
         });
@@ -203,158 +235,72 @@ $(function () {
   }
 
   /**
-   * 予約カードの作成
+   * 予約カードの作成（全予約カードの再作成）
    * @param targetDate 対象日付
    */
-  function createCard(targetDate) {
-    // 予約カードが存在する場合は削除
+  function createCardAll(targetDate) {
+    // 予約カードが存在する場合は全て削除
     $('div.reserve-card').each(function () {
       $(this).remove();
     });
 
     // 予約情報一覧の取得
-    let reserveJson = getReserveInfoList(targetDate);
+    let reserveJson = ApiUtil.getReserveList(targetDate);
 
     // 予約情報からカードを作成してスケジュールにセット
-    reserveJson.forEach((data) => {
-      try {
-        // 予約カードの作成
-        let $card = $(`
-                <div class="card reserve-card overflow-hidden" data-toggle="modal" data-target="#inputCardInfo">
-                    <div class="card-body">
-                        <p class="card-text"></p>
-                    </div>
-                </div>
-            `);
+    reserveJson.forEach(createCard);
+  }
 
-        // 予約カードのラベル表示＋吹き出しを設定
-        let cardText =
-          data['user_nm'] +
-          '<br>' +
-          moment(data['start_time']).format('HH:mm') +
-          '～' +
-          moment(data['end_time']).format('HH:mm') +
-          '<br>' +
-          data['reason'];
-        $card.find('.card-text').html(cardText);
-        $card.attr('title', cardText);
-        $card.tooltip({ html: true, trigger: 'hover' });
-        // 予約カードに全情報を埋め込む
-        $card.attr('data-reserve-info', JSON.stringify(data));
+  /**
+   * 予約カードの作成
+   * @param data 予約情報 {room_id, user_nm, start_time, end_time, reason}
+   * @returns 予約カード
+   */
+  function createCard(data) {
+    try {
+      // 対象オブジェクトの取得
+      let $startTd = $('#' + data['room_id'] + '-' + moment(data['start_time']).format('YYYYMMDDHHmm'));
+      let $endTd = $('#' + data['room_id'] + '-' + moment(data['end_time']).format('YYYYMMDDHHmm'));
 
-        // 予約カードのクリックイベントを設定（予約情報フォームの表示設定：予約変更）
-        $card.on('click', function () {
-          setReserveFormUpdate($card);
-        });
-
-        // 対象オブジェクトの取得
-        let $startTd = $('#' + data['room_id'] + '-' + moment(data['start_time']).format('HHmm'));
-        let $endTd = $('#' + data['room_id'] + '-' + moment(data['end_time']).format('HHmm'));
-
-        // カードサイズの設定
-        let width = $startTd.width();
-        let top = $startTd.offset().top;
-        let bottom;
-        if ($endTd.length > 0) {
-          bottom = $endTd.offset().top + $endTd.height() - $endTd.outerHeight(true);
-        } else {
-          bottom =
-            $('#scheduleTable tbody').offset().top + //
-            $('#scheduleTable tbody').height() + //
-            $startTd.height() - //
-            $startTd.outerHeight(true);
-        }
-        let height = bottom - top;
-        $card.css('width', width);
-        $card.css('height', height);
-
-        // スケジュールに追加
-        $startTd.append($card);
-      } catch (e) {
-        alert('正しく表示出来ない予約情報が存在します。システム管理者に問い合わせください。\r\n' + JSON.stringify(data));
-        console.log('エラー予約情報：' + JSON.stringify(data));
+      // カードサイズの設定
+      let width = $startTd.width();
+      let top = $startTd.offset().top;
+      let bottom;
+      if ($endTd.length > 0) {
+        bottom = $endTd.offset().top + $endTd.height() - $endTd.outerHeight(true);
+      } else {
+        bottom =
+          $('#scheduleTable tbody').offset().top + //
+          $('#scheduleTable tbody').height() + //
+          $startTd.height() - //
+          $startTd.outerHeight(true);
       }
-    });
+      let height = bottom - top;
+
+      // 予約カード生成
+      let $card = new ReserveCard() //
+        .create()
+        .setData(data)
+        .setSize(width, height)
+        .setEvent('click', clickReserveCard)
+        .get();
+
+      // スケジュールに追加
+      $startTd.append($card);
+
+      // 作成したカード情報を返却
+      return $card;
+    } catch (e) {
+      alert('正しく表示出来ない予約情報が存在します。システム管理者に問い合わせください。\r\n' + JSON.stringify(data));
+      console.log('エラー予約情報：' + JSON.stringify(data));
+      console.log('エラー内容：' + e);
+    }
   }
 
   /**
-   * スケジュール定義情報の取得
-   * @returns スケジュール定義情報
+   * 予約情報フォームの表示処理：新規予約
    */
-  function getScheduleDefine() {
-    let jsonData;
-
-    $.ajax({
-      url: SERVER_URL + '/setting',
-      type: 'GET',
-      dataType: 'json',
-      async: false,
-    })
-      .done((data) => {
-        jsonData = data;
-      })
-      .fail((res) => {
-        alert('設定情報の取得に失敗しました');
-      });
-
-    return jsonData['schedule_define'];
-  }
-
-  /**
-   * 会議室一覧の取得
-   * @returns 会議室一覧
-   */
-  function getRoomList() {
-    let jsonData;
-    $.ajax({
-      url: SERVER_URL + '/rooms',
-      type: 'GET',
-      dataType: 'json',
-      async: false,
-    })
-      .done((data) => {
-        jsonData = data;
-      })
-      .fail((res) => {
-        alert('会議室一覧の取得に失敗しました');
-      });
-    return jsonData;
-  }
-
-  /**
-   * 予約情報をサーバから取得
-   * @param targetDate 対象日付
-   * @returns 予約情報（json）
-   */
-  function getReserveInfoList(targetDate) {
-    let jsonData;
-    $.ajax({
-      url: SERVER_URL + '/reserves/search',
-      type: 'GET',
-      dataType: 'json',
-      data: { date: targetDate.format('YYYY-MM-DD') },
-      async: false,
-    })
-      .done((data) => {
-        if (data['errors']) {
-          // エラーメッセージの設定
-          setReserveFormValidate(data['errors']);
-          return;
-        }
-
-        // 結果返却
-        jsonData = data;
-      })
-      .fail((res) => {
-        alert('予約情報一覧の取得に失敗しました');
-      });
-    return jsonData;
-  }
-
-  /**
-   * 予約情報フォームの表示設定：新規予約
-   */
-  function setReserveFormNew() {
+  function showReserveFormNew() {
     // 個人設定の取得
     let userSetting = getUserSetting();
 
@@ -378,14 +324,21 @@ $(function () {
   }
 
   /**
+   * 予約カードクリックイベント
+   */
+  function clickReserveCard() {
+    let data = new ReserveCard($(this)).getData();
+    setReserveFormUpdate(data);
+  }
+
+  /**
    * 予約情報フォームの表示設定：予約変更
    */
-  function setReserveFormUpdate(ele) {
+  function setReserveFormUpdate(data) {
     // 個人設定の取得
     let userSetting = getUserSetting();
 
     // 予約情報のセット
-    let data = JSON.parse($(ele).attr('data-reserve-info'));
     setReserveFormValidate(null);
     $('#id').val(data['id']);
     $('#userNm').val(data['user_nm']);
@@ -407,6 +360,9 @@ $(function () {
     $('#updateBtn').removeClass('display-none');
     $('#registBtn').addClass('display-none');
     $('#copyBtn').removeClass('display-none');
+
+    // モーダル表示
+    $('#inputCardInfo').modal('show');
   }
 
   /**
@@ -429,108 +385,62 @@ $(function () {
   }
 
   /**
-   * 予約情報フォーム：登録処理
+   * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+   * @param {*} data
    */
-  function execRegist() {
-    $.ajax({
-      url: SERVER_URL + '/reserve',
-      type: 'POST',
-      dataType: 'json',
-      data: {
-        user_nm: $('#userNm').val(),
-        dept_nm: $('#deptNm').val(),
-        room_id: $('#roomId').val(),
-        reason: $('#reason').val(),
-        date: $('#date').val(),
-        start_time: $('#startTime').val(),
-        end_time: $('#endTime').val(),
-        password: $('#password').val(),
-      },
-      async: false,
-    })
-      .done((data) => {
-        if (data['errors']) {
-          // エラーメッセージの設定
-          setReserveFormValidate(data['errors']);
-          return;
-        }
+  function updateReserveCallback(data) {
+    if (data['errors']) {
+      // エラーメッセージの設定
+      setReserveFormValidate(data['errors']);
+      return;
+    }
 
-        // モーダルクローズ＋予約情報の再設定
-        $('#inputCardInfo').modal('hide');
-        createCard(getTargetDate());
-      })
-      .fail((res) => {
-        alert('システムエラーが発生しました。');
-        console.log(res);
-      });
+    // モーダルクローズ＋予約情報の再設定
+    $('#inputCardInfo').modal('hide');
+    createCardAll(getTargetDate());
   }
 
   /**
-   * 予約情報フォーム：変更処理
+   * 予約情報の登録/複写処理
    */
-  function execUpdate() {
-    $.ajax({
-      url: SERVER_URL + '/reserve',
-      type: 'PUT',
-      dataType: 'json',
-      data: {
-        id: $('#id').val(),
-        user_nm: $('#userNm').val(),
-        dept_nm: $('#deptNm').val(),
-        room_id: $('#roomId').val(),
-        reason: $('#reason').val(),
-        date: $('#date').val(),
-        start_time: $('#startTime').val(),
-        end_time: $('#endTime').val(),
-        password: $('#password').val(),
-      },
-      async: false,
-    })
-      .done((data) => {
-        if (data['errors']) {
-          // エラーメッセージの設定
-          setReserveFormValidate(data['errors']);
-          return;
-        }
-
-        // モーダルクローズ＋予約情報の再設定
-        $('#inputCardInfo').modal('hide');
-        createCard(getTargetDate());
-      })
-      .fail((res) => {
-        alert('システムエラーが発生しました。');
-        console.log(res);
-      });
+  function execReserveRegist() {
+    let data = {
+      user_nm: $('#userNm').val(),
+      dept_nm: $('#deptNm').val(),
+      room_id: $('#roomId').val(),
+      reason: $('#reason').val(),
+      date: $('#date').val(),
+      start_time: $('#startTime').val(),
+      end_time: $('#endTime').val(),
+      password: $('#password').val(),
+    };
+    ApiUtil.registReserve(data, updateReserveCallback);
   }
 
   /**
-   * 予約情報フォーム：取消処理
+   * 予約情報の変更処理
    */
-  function execCancel() {
-    $.ajax({
-      url: SERVER_URL + '/reserve',
-      type: 'DELETE',
-      dataType: 'json',
-      data: {
-        id: $('#id').val(),
-        password: $('#password').val(),
-      },
-      async: false,
-    })
-      .done((data) => {
-        if (data['errors']) {
-          // エラーメッセージの設定
-          setReserveFormValidate(data['errors']);
-          return;
-        }
+  function execReserveUpdate() {
+    let data = {
+      id: $('#id').val(),
+      user_nm: $('#userNm').val(),
+      dept_nm: $('#deptNm').val(),
+      room_id: $('#roomId').val(),
+      reason: $('#reason').val(),
+      date: $('#date').val(),
+      start_time: $('#startTime').val(),
+      end_time: $('#endTime').val(),
+      password: $('#password').val(),
+    };
+    ApiUtil.updateReserve(data, updateReserveCallback);
+  }
 
-        // モーダルクローズ＋予約情報の再設定
-        $('#inputCardInfo').modal('hide');
-        createCard(getTargetDate());
-      })
-      .fail((res) => {
-        alert('システムエラーが発生しました。');
-        console.log(res);
-      });
+  /**
+   * 予約情報の取消処理
+   */
+  function execReserveCancel() {
+    let id = $('#id').val();
+    let password = $('#password').val();
+    ApiUtil.deleteReserve(id, password, updateReserveCallback);
   }
 });

@@ -1,3 +1,11 @@
+#scheduleTable {
+  user-select: none;
+}
+
+#scheduleTable tbody:active {
+  cursor: s-resize;
+}
+
 #scheduleTable tbody tr {
   height: 40px;
 }

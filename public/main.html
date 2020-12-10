@@ -26,7 +26,9 @@
 
     <!-- 独自 -->
     <link rel="stylesheet" href="main.css" />
-    <script src="main.js"></script>
+    <script src="./main.js"></script>
+    <script src="./com/reserveCard.js"></script>
+    <script src="./com/apiUtil.js"></script>
   </head>
   <body>
     <!-- ヘッダ -->
@@ -43,6 +45,16 @@
             <h5>カレンダー</h5>
             <div id="datepicker" style="transform: scale(0.9, 0.9); margin-top: -10px; margin-left: -30px"></div>
             <div style="line-height: 5px"><br /></div>
+
+            <hr />
+
+            <!-- 個人設定 -->
+            <h5>個人設定</h5>
+            <div>
+              <button id="userSettingBtn" class="btn btn-outline-primary btn-sm">個人設定</button>
+            </div>
+
+            <hr />
 
             <!-- 氏名選択 -->
             <h5>表示設定</h5>
@@ -70,7 +82,7 @@
         <!-- メインコンテンツ -->
         <div class="col-9 main-content">
           <!-- スケジュール -->
-          <div class="pt-4">
+          <div id="scheduleArea" class="pt-4">
             <div class="d-inline">
               <!-- 日付＋新規予約ボタン -->
               <input type="hidden" id="targetDate" />
@@ -78,7 +90,6 @@
               &nbsp;&nbsp;
               <button id="newBtn" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#inputCardInfo">新規予約</button>
               &nbsp;&nbsp;
-              <button id="userSettingBtn" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#userSettingInfo">個人設定</button>
             </div>
             <table id="scheduleTable" class="table table-sm table-bordered">
               <thead class="thead-dark"></thead>
@@ -195,6 +206,5 @@
       </div>
     </div>
     <!-- /入力フォームModal -->
-    
   </body>
 </html>

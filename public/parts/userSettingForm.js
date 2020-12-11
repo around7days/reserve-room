@@ -8,6 +8,7 @@ class UserSettingForm {
   constructor() {
     this.$form = null;
   }
+
   /**
    * 個人情報設定フォームの生成
    * @returns 自身のクラス

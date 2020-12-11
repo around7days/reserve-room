@@ -85,13 +85,24 @@ $(function () {
         createCardAll(getTargetDate());
       },
     });
+    $('#datepicker') //
+      .css('transform', 'scale(0.9, 0.9)')
+      .css('margin-top', '-10px')
+      .css('margin-left', '-30px');
   }
 
   /**
    * 予約情報フォームの生成
    */
   function createReserveForm() {
-    let $reserveForm = rsvForm.create().get();
+    // 登録/更新/削除処理後に実行するコールバック関数の作成
+    var callback = function () {
+      let targetDate = getTargetDate();
+      createCardAll(targetDate);
+    };
+    // フォーム生成
+    let $reserveForm = rsvForm.create().setSuccessCallback(callback).get();
+    // 追加
     $('#reserveFormArea').append($reserveForm);
   }
 
@@ -286,9 +297,8 @@ $(function () {
     }
     rsvForm.setData(data).showUpdate();
   }
-  
+
   function getTimeRoomId(roomId, date, time) {
     return roomId + '_' + moment(date + ' ' + time).format('YYYYMMDD_HHmm');
   }
-  
 });

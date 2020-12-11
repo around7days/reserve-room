@@ -7,6 +7,7 @@ class reserveForm {
    */
   constructor() {
     this.$form = null;
+    this.successCallback;
   }
   /**
    * 予約情報フォームの生成
@@ -164,6 +165,16 @@ class reserveForm {
   }
 
   /**
+   * 登録/複写/更新/削除処理成功時のコールバック関数をセット
+   * @param callback コールバック関数
+   * @returns 自身のクラス
+   */
+  setSuccessCallback(callback) {
+    this.successCallback = callback;
+    return this;
+  }
+
+  /**
    * 表示（予約登録モード）
    * @returns 自身のクラス
    */
@@ -234,15 +245,17 @@ class reserveForm {
 
   /**
    * 予約情報の登録/複写/変更/取消後のコールバック処理
-   * @param {*} data
+   * @param res 処理結果
    */
-  execCallback(data) {
-    if (data['errors']) {
-      // エラーメッセージの設定
-      this.setMessage(data['errors']);
+  execCallback(res) {
+    // エラー時はエラーメッセージを表示
+    // 正常時は画面をクローズして指定されたコールバック関数の実行
+    if (res['errors']) {
+      this.setMessage(res['errors']);
       return;
     } else {
       this.hide();
+      this.successCallback();
     }
   }
 

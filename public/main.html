@@ -24,6 +24,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/ja.js"></script>
 
+    <!-- font awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+
     <!-- 独自 -->
     <link rel="stylesheet" href="main.css" />
     <script src="./main.js"></script>
@@ -39,26 +42,31 @@
     </nav>
 
     <div class="container-fluid" style="width: 1024px">
+      <!-- 日付(hidden) -->
+      <input type="hidden" id="targetDate" />
+
       <div class="row">
         <!-- サイドバー -->
         <div class="col-3 side-content">
           <div class="pt-4">
             <!-- カレンダー -->
-            <h5>カレンダー</h5>
-            <div id="datepicker" style="transform: scale(0.9, 0.9); margin-top: -10px; margin-left: -30px"></div>
-            <div style="line-height: 5px"><br /></div>
-
-            <hr />
-
-            <!-- 個人設定 -->
-            <h5>個人設定</h5>
             <div>
-              <button id="userSettingBtn" class="btn btn-outline-primary btn-sm">個人設定</button>
+              <div class="d-inline">
+                <h5 class="d-inline pr-2">カレンダー</h5>
+                <button id="reserveNewBtn" class="btn btn-outline-primary btn-sm">新規予約</button>
+              </div>
+              <div id="datepicker"></div>
             </div>
-
-            <hr />
-
-            <!-- 氏名選択 -->
+            <hr class="pt-2" />
+            <!-- 個人設定 -->
+            <div>
+              <div class="d-inline">
+                <h5 class="d-inline pr-2">個人設定</h5>
+                <button id="userSettingBtn" class="btn btn-outline-primary btn-sm">表示</button>
+              </div>
+            </div>
+            <hr class="pt-2" />
+            <!-- 表示設定 -->
             <h5>表示設定</h5>
             <div>
               <div class="form-check">
@@ -83,20 +91,8 @@
 
         <!-- メインコンテンツ -->
         <div class="col-9 main-content">
-          <!-- スケジュール -->
-          <div id="scheduleArea" class="pt-4">
-            <div class="d-inline">
-              <!-- 日付＋新規予約ボタン -->
-              <input type="hidden" id="targetDate" />
-              <h5 class="d-inline" id="targetDateNm"></h5>
-              &nbsp;&nbsp;
-              <button id="newBtn" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#inputCardInfo">新規予約</button>
-              &nbsp;&nbsp;
-            </div>
-            <table id="scheduleTable" class="table table-sm table-bordered">
-              <thead class="thead-dark"></thead>
-              <tbody></tbody>
-            </table>
+          <div class="pt-4">
+            <div id="scheduleArea"></div>
           </div>
         </div>
       </div>

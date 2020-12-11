@@ -12,6 +12,7 @@ const logger = require('./logger');
 /* サーバを3000番ポート待ち受け */
 const server = app.listen(port, () => {
   logger.info('Node.js is listening to PORT:' + server.address().port);
+  logger.info('index url: http://localhost:3000/main.html'); // TODO ★テスト用★
 });
 
 /* CORSを許可する */

@@ -64,6 +64,13 @@ class ApiUtil {
       .fail((res) => {
         alert('予約情報の取得に失敗しました');
       });
+
+    // TODO ★データレイアウトの加工
+    jsonData.forEach((data) => {
+      data['date'] = moment(data['start_time']).format('YYYY-MM-DD');
+      data['start_time'] = moment(data['start_time']).format('HH:mm');
+      data['end_time'] = moment(data['end_time']).format('HH:mm');
+    });
     return jsonData;
   }
 
@@ -73,6 +80,10 @@ class ApiUtil {
    * @param callback 処理成功時のコールバック関数
    */
   static registReserve(data, callback) {
+    // TODO ★データレイアウトの加工
+    // data['start_time'] = data['date'] + ' ' + data['start_time'];
+    // data['end_time'] = data['date'] + ' ' + data['end_time'];
+
     $.ajax({
       url: SERVER_URL + '/reserve',
       type: 'POST',
@@ -102,6 +113,9 @@ class ApiUtil {
    * @param callback 処理成功時のコールバック関数
    */
   static updateReserve(data, callback) {
+    // TODO ★データレイアウトの加工
+    // data['start_time'] = data['date'] + ' ' + data['start_time'];
+    // data['end_time'] = data['date'] + ' ' + data['end_time'];
     $.ajax({
       url: SERVER_URL + '/reserve',
       type: 'PUT',

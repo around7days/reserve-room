@@ -43,14 +43,7 @@ class ReserveCard {
    */
   setData(data) {
     // 予約カードに表示する値の生成
-    let cardText =
-      data['user_nm'] +
-      '<br>' +
-      moment(data['start_time']).format('HH:mm') +
-      '～' +
-      moment(data['end_time']).format('HH:mm') +
-      '<br>' +
-      data['reason'];
+    let cardText = data['user_nm'] + '<br>' + data['start_time'] + '～' + data['end_time'] + '<br>' + data['reason'];
 
     // ラベル＋吹き出しを設定
     this.$card.find('.card-text').html(cardText);

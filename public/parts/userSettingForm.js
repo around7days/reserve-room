@@ -121,7 +121,7 @@ class UserSettingForm {
 
   /**
    * 表示
-   * @param data 個人情報
+   * @returns 自身のクラス
    */
   show() {
     this.$form.modal('show');
@@ -130,7 +130,7 @@ class UserSettingForm {
 
   /**
    * 非表示
-   * @param data 個人情報
+   * @returns 自身のクラス
    */
   hide() {
     this.$form.modal('hide');

@@ -9,7 +9,7 @@ $(function () {
   init();
 
   /** 新規予約ボタン押下 */
-  $('#newBtn').on('click', showReserveFormNew);
+  $('#reserveNewBtn').on('click', showReserveFormNew);
 
   /** 個人設定ボタン押下 */
   $('#userSettingBtn').on('click', showUserSettingForm);
@@ -20,7 +20,6 @@ $(function () {
   var dragFlg = false;
   var $dragCard;
   $('#scheduleTable tbody td').on('mousedown', doMousedown);
-  // $('#scheduleTable tbody td').on('mousemove', mousemove);
   $('#scheduleTable tbody td').on('mouseover', mousemove);
   $('#scheduleTable tbody td').on('mouseup', doMouseup);
 
@@ -79,10 +78,12 @@ $(function () {
       selectOtherMonths: true,
       minDate: 0,
       onSelect: function (dateText, inst) {
+        let date = moment(dateText);
         // 日付の再設定
-        setTargetDate(moment(dateText));
+        setTargetDate(date);
+        schedule.setDate(date);
         // 予約カードの再作成
-        createCardAll(getTargetDate());
+        createCardAll(date);
       },
     });
     $('#datepicker') //
@@ -115,6 +116,15 @@ $(function () {
   }
 
   /**
+   * スケジュール作成
+   */
+  function createSchedule() {
+    let targetDate = getTargetDate();
+    let $schedule = schedule.create().setDate(targetDate).get();
+    $('#scheduleArea').append($schedule);
+  }
+
+  /**
    * 個人情報設定フォームの表示
    */
   function showUserSettingForm() {
@@ -123,96 +133,12 @@ $(function () {
   }
 
   /**
-   * 対象日付表示
-   * @param targetDate 対象日付
-   */
-  function setTargetDate(targetDate) {
-    $('#targetDate').val(targetDate.format('YYYY-MM-DD'));
-    $('#targetDateNm').text(targetDate.format('YYYY年MM月DD日（ddd）'));
-  }
-
-  /**
-   * 対象日付取得
-   * @returns 対象日付
-   */
-  function getTargetDate() {
-    return moment($('#targetDate').val());
-  }
-
-  /**
-   * スケジュール作成
-   */
-  function createSchedule() {
-    // スケジュールテーブル
-    const $table = $('#scheduleTable');
-
-    // 会議室一覧の取得
-    let roomJson = ApiUtil.getRoomList();
-
-    // スケジュール定義情報の取得
-    let scheduleDefineJson = ApiUtil.getScheduleDefine();
-    let startTime = moment(scheduleDefineJson['start_time'], 'HH:mm');
-    let endTime = moment(scheduleDefineJson['end_time'], 'HH:mm');
-    let interval = scheduleDefineJson['interval'];
-
-    // 日付の取得
-    let targetDate = getTargetDate();
-
-    // ヘッダ行（会議室行）の生成
-    {
-      // tr行の生成
-      let $tr = $('<tr>');
-
-      // 時刻列の追加
-      let $timeTd = $('<th>').css('width', '60px').text('時刻');
-      $tr.append($timeTd);
-
-      // 会議室列の追加
-      roomJson.forEach((data) => {
-        $roomTd = $('<th>').css('width', '100px').text(data['room_nm']);
-        $tr.append($roomTd);
-      });
-
-      // ヘッダ業に追加
-      $table.find('thead').append($tr);
-    }
-
-    {
-      // 明細行（時刻行）の生成
-      let time = startTime;
-      while (time < endTime) {
-        // tr行の生成
-        let $tr = $('<tr>');
-
-        // 時刻列の追加
-        let $timeTd = $('<td>').addClass('table-light').text(time.format('HH:mm'));
-        $tr.append($timeTd);
-
-        // 会議室列の追加
-        roomJson.forEach((data) => {
-          let timeRoomId = getTimeRoomId(data['room_id'], targetDate.format('YYYY-MM-DD'), time.format('HH:mm'));
-          let $timeRoomTd = $('<td>').attr('id', timeRoomId);
-          $tr.append($timeRoomTd);
-        });
-
-        // 明細に設定
-        $table.find('tbody').append($tr);
-
-        // インターバル時刻の追加
-        time = time.add(interval, 'm');
-      }
-    }
-  }
-
-  /**
    * 予約カードの作成（全予約カードの再作成）
    * @param targetDate 対象日付
    */
   function createCardAll(targetDate) {
     // 予約カードが存在する場合は全て削除
-    $('div.reserve-card').each(function () {
-      $(this).remove();
-    });
+    reserveCard.removeAll();
 
     // 予約情報一覧の取得
     let reserveJson = ApiUtil.getReserveList(targetDate);
@@ -228,35 +154,22 @@ $(function () {
    */
   function createCard(data) {
     try {
-      // 対象オブジェクトの取得
-      let $startTd = $('#' + getTimeRoomId(data['room_id'], data['date'], data['start_time']));
-      let $endTd = $('#' + getTimeRoomId(data['room_id'], data['date'], data['end_time']));
+      // 予約カードサイズの生成
+      let size = schedule.getCellSize(data['room_id'], data['start_time'], data['end_time']);
 
-      // カードサイズの設定
-      let width = $startTd.width();
-      let top = $startTd.offset().top;
-      let bottom;
-      if ($endTd.length > 0) {
-        bottom = $endTd.offset().top + $endTd.height() - $endTd.outerHeight(true);
-      } else {
-        bottom =
-          $('#scheduleTable tbody').offset().top + //
-          $('#scheduleTable tbody').height() + //
-          $startTd.height() - //
-          $startTd.outerHeight(true);
-      }
-      let height = bottom - top;
+      // 予約カードの表示位置を取得
+      let $target = schedule.getCell(data['room_id'], data['start_time']);
 
       // 予約カード生成
-      let $card = new ReserveCard() //
+      let $card = reserveCard //
         .create()
         .setData(data)
-        .setSize(width, height)
+        .setSize(size['width'], size['height'])
         .setEvent('click', clickReserveCard)
         .get();
 
       // スケジュールに追加
-      $startTd.append($card);
+      $target.append($card);
 
       // 作成したカード情報を返却
       return $card;
@@ -285,7 +198,7 @@ $(function () {
    * 予約カードクリックイベント
    */
   function clickReserveCard() {
-    let data = new ReserveCard($(this)).getData();
+    let data = reserveCard.set(this).getData();
     let userSetting = usForm.getDataByStorage();
 
     // 氏名・部署が一致する場合のみデフォルトパスワードを設定
@@ -298,7 +211,19 @@ $(function () {
     rsvForm.setData(data).showUpdate();
   }
 
-  function getTimeRoomId(roomId, date, time) {
-    return roomId + '_' + moment(date + ' ' + time).format('YYYYMMDD_HHmm');
+  /**
+   * 対象日付表示
+   * @param targetDate 対象日付
+   */
+  function setTargetDate(targetDate) {
+    $('#targetDate').val(targetDate.format('YYYY-MM-DD'));
+  }
+
+  /**
+   * 対象日付取得
+   * @returns 対象日付
+   */
+  function getTargetDate() {
+    return moment($('#targetDate').val());
   }
 });

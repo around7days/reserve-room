@@ -1,7 +1,4 @@
 $(function () {
-  /** サーバURL */
-  const SERVER_URL = '';
-
   /** 送信ボタン押下 */
   $('#sendBtn').on('click', doSend);
 

@@ -1,0 +1,9 @@
+.reserve-card {
+  position: absolute;
+  background: rgba(255, 0, 0, 0.35);
+  cursor: pointer;
+}
+
+.reserve-card div {
+  margin: -15px;
+}

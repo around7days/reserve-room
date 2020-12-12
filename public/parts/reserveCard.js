@@ -1,16 +1,12 @@
 /**
  * 予約カードクラス
  */
-class ReserveCard {
+class ReserveCardClass {
   /**
-   * コンストラクタ<br>
-   * @param card 予約カードエレメント（未指定可）
+   * コンストラクタ
    */
-  constructor(card) {
+  constructor() {
     this.card = null;
-    if (card) {
-      this.$card = $(card);
-    }
   }
 
   /**
@@ -34,6 +30,16 @@ class ReserveCard {
    */
   get() {
     return this.$card;
+  }
+
+  /**
+   * 予約カードエレメントの取得
+   * @param card 予約カード
+   * @returns 自身のクラス
+   */
+  set(card) {
+    this.$card = $(card);
+    return this;
   }
 
   /**
@@ -106,4 +112,27 @@ class ReserveCard {
     this.$card.on(event, callbackFnc);
     return this;
   }
+
+  /**
+   * 対象の予約カードを削除
+   * @card 予約カード
+   * @returns 自身のクラス
+   */
+  removeA(card) {
+    $(card).remove();
+    return this;
+  }
+
+  /**
+   * 予約カードを全て削除
+   * @returns 自身のクラス
+   */
+  removeAll() {
+    $('div.reserve-card').each(function () {
+      $(this).remove();
+    });
+    return this;
+  }
 }
+
+const reserveCard = new ReserveCardClass();

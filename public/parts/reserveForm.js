@@ -1,7 +1,7 @@
 /**
  * 予約情報フォームクラス
  */
-class reserveForm {
+class reserveFormClass {
   /**
    * コンストラクタ
    */
@@ -254,8 +254,8 @@ class reserveForm {
       this.setMessage(res['errors']);
       return;
     } else {
-      this.hide();
       this.successCallback();
+      this.hide();
     }
   }
 
@@ -282,4 +282,4 @@ class reserveForm {
   }
 }
 
-const rsvForm = new reserveForm();
+const rsvForm = new reserveFormClass();

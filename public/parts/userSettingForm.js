@@ -1,7 +1,7 @@
 /**
  * 個人情報設定フォームクラス
  */
-class UserSettingForm {
+class UserSettingFormClass {
   /**
    * コンストラクタ
    */
@@ -139,4 +139,4 @@ class UserSettingForm {
   }
 }
 
-const usForm = new UserSettingForm();
+const usForm = new UserSettingFormClass();

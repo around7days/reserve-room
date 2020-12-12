@@ -17,35 +17,6 @@ $(function () {
   /** カレンダー：クリック */
   // -------------------------------------------------------------------
   // -------------------------------------------------------------------
-  var dragFlg = false;
-  var $dragCard;
-  $('#scheduleTable tbody td').on('mousedown', doMousedown);
-  $('#scheduleTable tbody td').on('mouseover', mousemove);
-  $('#scheduleTable tbody td').on('mouseup', doMouseup);
-
-  function doMousedown() {
-    dragFlg = true;
-    console.log('down:' + $(this).attr('id'));
-    let data = {
-      room_id: 3,
-      user_nm: '太郎',
-      start_time: '2020-12-09 08:30:00',
-      end_time: '2020-12-09 10:00:00',
-      reason: 'テスト理由',
-    };
-    // $dragCard = createCard(data);
-  }
-  function mousemove() {
-    if (!dragFlg) {
-      return;
-    }
-    console.log('move:' + $(this).attr('id'));
-  }
-  function doMouseup() {
-    dragFlg = false;
-    // $dragCard.remove();
-    console.log('up  :' + $(this).attr('id'));
-  }
   // -------------------------------------------------------------------
   // -------------------------------------------------------------------
 
@@ -97,22 +68,19 @@ $(function () {
    */
   function createReserveForm() {
     // 登録/更新/削除処理後に実行するコールバック関数の作成
-    var callback = function () {
+    let callback = function () {
       let targetDate = getTargetDate();
       createCardAll(targetDate);
     };
     // フォーム生成
-    let $reserveForm = rsvForm.create().setSuccessCallback(callback).get();
-    // 追加
-    $('#reserveFormArea').append($reserveForm);
+    rsvForm.create().setSuccessCallback(callback).render($('#reserveFormArea'));
   }
 
   /**
    * 個人情報設定フォームの生成
    */
   function createUserSettingForm() {
-    let $userSettingForm = usForm.create().get();
-    $('#userSettingFormArea').append($userSettingForm);
+    usForm.create().render($('#userSettingFormArea'));
   }
 
   /**
@@ -120,8 +88,16 @@ $(function () {
    */
   function createSchedule() {
     let targetDate = getTargetDate();
-    let $schedule = schedule.create().setDate(targetDate).get();
-    $('#scheduleArea').append($schedule);
+
+    // 明細行のドロップ処理イベントの生成
+    let callback = function (data) {
+      if (moment(data['start_time'], 'HH:mm').isBefore(moment(data['end_time'], 'HH:mm'))) {
+        showReserveFormNew(data);
+      }
+    };
+
+    // 画面描画
+    schedule.create().setDate(targetDate).setDropCallback(callback).render($('#scheduleArea'));
   }
 
   /**
@@ -139,17 +115,15 @@ $(function () {
   function createCardAll(targetDate) {
     // 予約カードが存在する場合は全て削除
     reserveCard.removeAll();
-
     // 予約情報一覧の取得
     let reserveJson = ApiUtil.getReserveList(targetDate);
-
     // 予約情報からカードを作成してスケジュールにセット
     reserveJson.forEach(createCard);
   }
 
   /**
    * 予約カードの作成
-   * @param data 予約情報 {room_id, user_nm, start_time, end_time, reason}
+   * @param data 予約情報 {room_id, user_nm, dept_nm, start_time, end_time, reason}
    * @returns 予約カード
    */
   function createCard(data) {
@@ -160,16 +134,30 @@ $(function () {
       // 予約カードの表示位置を取得
       let $target = schedule.getCell(data['room_id'], data['start_time']);
 
+      // 予約カードの色を生成
+      let isSelfUserFlg = isSelfUser(data['user_nm'], data['dept_nm']);
+
+      // 予約カードのクリックイベントを生成
+      let clickEvent = function () {
+        // 予約情報フォームの表示
+        let data = reserveCard.set(this).getData();
+        if (isSelfUser(data['user_nm'], data['dept_nm'])) {
+          // 氏名・部署が一致する場合のみデフォルトパスワードを設定
+          let userSetting = usForm.getDataByStorage();
+          data['password'] = userSetting['def_password'];
+        }
+        rsvForm.setData(data).showUpdate();
+      };
+
       // 予約カード生成
-      let $card = reserveCard //
+      let $card = reserveCard
         .create()
         .setData(data)
         .setSize(size['width'], size['height'])
-        .setEvent('click', clickReserveCard)
+        .setIsSelfUser(isSelfUserFlg)
+        .setEvent('click', clickEvent)
+        .render($target)
         .get();
-
-      // スケジュールに追加
-      $target.append($card);
 
       // 作成したカード情報を返却
       return $card;
@@ -182,33 +170,18 @@ $(function () {
 
   /**
    * 予約情報フォームの表示処理：新規予約
+   * @data 初期表示データ
    */
-  function showReserveFormNew() {
-    let userSetting = usForm.getDataByStorage();
-    let data = {
-      user_nm: userSetting['def_user_nm'],
-      dept_nm: userSetting['def_dept_nm'],
-      date: getTargetDate().format('YYYY-MM-DD'),
-      password: userSetting['def_password'],
-    };
-    rsvForm.setData(data).showNew();
-  }
-
-  /**
-   * 予約カードクリックイベント
-   */
-  function clickReserveCard() {
-    let data = reserveCard.set(this).getData();
-    let userSetting = usForm.getDataByStorage();
-
-    // 氏名・部署が一致する場合のみデフォルトパスワードを設定
-    if (
-      userSetting['def_user_nm'] == data['user_nm'] || //
-      userSetting['def_dept_nm'] == data['dept_nm']
-    ) {
-      data['password'] = userSetting['def_password'];
+  function showReserveFormNew(data) {
+    if (!data) {
+      data = {};
     }
-    rsvForm.setData(data).showUpdate();
+    let userSetting = usForm.getDataByStorage();
+    data['user_nm'] = userSetting['def_user_nm'];
+    data['dept_nm'] = userSetting['def_dept_nm'];
+    data['date'] = getTargetDate().format('YYYY-MM-DD');
+    data['password'] = userSetting['def_password'];
+    rsvForm.setData(data).showNew();
   }
 
   /**
@@ -225,5 +198,20 @@ $(function () {
    */
   function getTargetDate() {
     return moment($('#targetDate').val());
+  }
+
+  /**
+   * 自身か判定
+   * @param userNm 氏名
+   * @param deptNm 部署名
+   * @returns 結果[true:自身]
+   */
+  function isSelfUser(userNm, deptNm) {
+    // 氏名・部署が一致する場合は自身と判断
+    let userSetting = usForm.getDataByStorage();
+    if (userSetting['def_user_nm'] == userNm && userSetting['def_dept_nm'] == deptNm) {
+      return true;
+    }
+    return false;
   }
 });

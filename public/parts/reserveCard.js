@@ -25,6 +25,16 @@ class ReserveCardClass {
   }
 
   /**
+   * 画面表示処理
+   * @param ele 表示対象
+   * @returns 自身のクラス
+   */
+  render(ele) {
+    $(ele).append(this.get());
+    return this;
+  }
+
+  /**
    * 予約カードエレメントの取得
    * @returns 予約カード
    */
@@ -57,7 +67,7 @@ class ReserveCardClass {
     this.$card.tooltip({ html: true, trigger: 'hover' });
 
     // 内部に全情報を埋め込む
-    this.$card.attr('data-reserve-info', JSON.stringify(data));
+    this.$card.attr('data-info', JSON.stringify(data));
     return this;
   }
 
@@ -66,7 +76,7 @@ class ReserveCardClass {
    * @return 予約情報
    */
   getData() {
-    let data = JSON.parse(this.$card.attr('data-reserve-info'));
+    let data = JSON.parse(this.$card.attr('data-info'));
     return data;
   }
 
@@ -103,6 +113,30 @@ class ReserveCardClass {
   }
 
   /**
+   * 横幅セット
+   * @param width 横幅(px)
+   * @returns 自身のクラス
+   */
+  setWidth(width) {
+    this.$card.css('width', width);
+    return this;
+  }
+
+  /**
+   * 自身のカードかどうかをセット
+   * @param flg (true:自身 )
+   * @returns 自身のクラス
+   */
+  setIsSelfUser(flg) {
+    if (flg) {
+      this.$card.addClass('reserve-card-self');
+    } else {
+      this.$card.addClass('reserve-card-not-self');
+    }
+    return this;
+  }
+
+  /**
    * イベントをセット
    * @param event イベント
    * @param callback コールバック関数
@@ -110,16 +144,6 @@ class ReserveCardClass {
    */
   setEvent(event, callbackFnc) {
     this.$card.on(event, callbackFnc);
-    return this;
-  }
-
-  /**
-   * 対象の予約カードを削除
-   * @card 予約カード
-   * @returns 自身のクラス
-   */
-  removeA(card) {
-    $(card).remove();
     return this;
   }
 

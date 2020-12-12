@@ -1,26 +1,5 @@
 class ApiUtil {
   /**
-   * スケジュール定義情報の取得
-   * @returns スケジュール定義情報
-   */
-  static getScheduleDefine() {
-    let jsonData;
-    $.ajax({
-      url: SERVER_URL + '/setting',
-      type: 'GET',
-      dataType: 'json',
-      async: false,
-    })
-      .done((data) => {
-        jsonData = data;
-      })
-      .fail((res) => {
-        alert('設定情報の取得に失敗しました');
-      });
-    return jsonData['schedule_define'];
-  }
-
-  /**
    * 会議室一覧の取得
    * @returns 会議室一覧
    */

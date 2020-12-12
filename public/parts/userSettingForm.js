@@ -26,7 +26,6 @@ class UserSettingFormClass {
             </div>
             <div class="modal-body">
               <div>
-                <h6 class="modal-title">初期値設定</h6>
                 <div class="form-row">
                   <div class="form-group col-4">
                     <label class="col-form-label">氏名</label>
@@ -40,7 +39,7 @@ class UserSettingFormClass {
                 <div class="form-row">
                   <div class="form-group col-4">
                     <label class="col-form-label">パスワード</label>
-                    <input type="password" class="form-control" data-id="defPassword" />
+                    <input type="password" class="form-control" data-id="defPassword" autocomplete="off" />
                   </div>
                 </div>
               </div>
@@ -59,6 +58,16 @@ class UserSettingFormClass {
       this.saveDataByStorage(data).hide();
     });
 
+    return this;
+  }
+
+  /**
+   * 画面表示処理
+   * @param ele 表示対象
+   * @returns 自身のクラス
+   */
+  render(ele) {
+    $(ele).append(this.get());
     return this;
   }
 

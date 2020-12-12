@@ -7,6 +7,11 @@ class ScheduleClass {
    */
   constructor() {
     this.$schedule;
+    this.dragFlg = false;
+    this.dragRoomId;
+    this.dragStartTime;
+    this.dragEndTime;
+    this.dropCallback;
   }
 
   /**
@@ -23,20 +28,22 @@ class ScheduleClass {
         <table class="table table-sm table-bordered schedule-table">
           <thead class="thead-dark"></thead>
           <tbody></tbody>
+          <tfoot class="thead-dark"></tfoot>
         </table>
       </div>
     `);
 
     // テーブル
     let $table = this.$schedule.find('.table');
+    let $thead = $table.find('thead');
+    let $tbody = $table.find('tbody');
+    let $tfoot = $table.find('tfoot');
 
     // 会議室一覧の取得
     let roomList = ApiUtil.getRoomList();
 
-    // ヘッダ行の生成
+    // ヘッダ行・フッタ行の生成
     {
-      let $thead = $table.find('thead');
-
       // tr行の生成
       let $tr = $('<tr>');
 
@@ -50,23 +57,18 @@ class ScheduleClass {
         $tr.append($roomTd);
       });
 
-      // ヘッダ行に追加
-      $thead.append($tr);
+      // ヘッダ行・フッタ行に追加
+      $thead.append($tr.clone());
+      // $tfoot.append($tr.clone());
     }
 
     // 明細行の生成
     {
-      let $tbody = $table.find('tbody');
-
       // スケジュール定義情報の取得
-      let scheduleDefineJson = ApiUtil.getScheduleDefine();
-      let startTime = moment(scheduleDefineJson['start_time'], 'HH:mm');
-      let endTime = moment(scheduleDefineJson['end_time'], 'HH:mm');
-      let interval = scheduleDefineJson['interval'];
+      let timeList = this.getTimeList();
 
       // 明細行（時刻行）の生成
-      let time = startTime;
-      while (time < endTime) {
+      timeList.forEach((time) => {
         // tr行の生成
         let $tr = $('<tr>');
 
@@ -77,18 +79,37 @@ class ScheduleClass {
         // 会議室列の追加
         roomList.forEach((room) => {
           let cellId = this.getCellId(room['room_id'], time.format('HH:mm'));
-          let $roomTd = $('<td>').attr('id', cellId);
+          let data = {
+            room_id: room['room_id'],
+            time: time.format('HH:mm'),
+          };
+          let $roomTd = $('<td>').attr('id', cellId).attr('data-info', JSON.stringify(data));
           $tr.append($roomTd);
         });
 
         // 明細に設定
         $tbody.append($tr);
-
-        // インターバル時刻の追加
-        time = time.add(interval, 'm');
-      }
+      });
     }
 
+    // 明細行セルのイベント登録
+    $tbody
+      .find('tr td:not(.table-light)')
+      .on('mousedown', this.doMousedown.bind(this))
+      .on('mouseover', this.doMousemove.bind(this))
+      .on('mouseup', this.doMouseup.bind(this));
+    $tbody.on('mouseleave', this.doMouseleave.bind(this));
+
+    return this;
+  }
+
+  /**
+   * 画面表示処理
+   * @param ele 表示対象
+   * @returns 自身のクラス
+   */
+  render(ele) {
+    $(ele).append(this.get());
     return this;
   }
 
@@ -112,6 +133,39 @@ class ScheduleClass {
   }
 
   /**
+   * 時間一覧の取得
+   * @returns 時間一覧
+   */
+  getTimeList() {
+    // スケジュール定義情報の取得
+    let scheduleDefineJson = SETTING['schedule_define'];
+    let startTime = moment(scheduleDefineJson['start_time'], 'HH:mm');
+    let endTime = moment(scheduleDefineJson['end_time'], 'HH:mm');
+    let interval = scheduleDefineJson['interval'];
+
+    // 時間一覧の生成
+    let timeList = [];
+    let time = startTime;
+    while (time < endTime) {
+      timeList.push(time.clone());
+      time = time.add(interval, 'm');
+    }
+
+    return timeList;
+  }
+
+  /**
+   * 次の時間の取得
+   * @param 時間
+   * @returns 次の時間
+   */
+  getNextTime(time) {
+    let scheduleDefineJson = SETTING['schedule_define'];
+    let interval = scheduleDefineJson['interval'];
+    return moment(time, 'HH:mm').add(interval, 'm');
+  }
+
+  /**
    * セルIDの取得
    * @param roomId 会議室ID
    * @param time 時刻
@@ -130,6 +184,35 @@ class ScheduleClass {
   getCell(roomId, time) {
     let id = this.getCellId(roomId, time);
     return this.$schedule.find('#' + id);
+  }
+
+  /**
+   * セル範囲の背景色を変更
+   * @param roomId 会議室ID
+   * @param time 時刻
+   */
+  changeColorCellRange(roomId, startTime, endTime) {
+    this.getTimeList().forEach((time) => {
+      let $cell = this.getCell(roomId, time);
+      if (time.isSameOrAfter(moment(startTime, 'HH:mm')) && time.isSameOrBefore(moment(endTime, 'HH:mm'))) {
+        $cell.addClass('schedule-drag-color');
+      } else {
+        $cell.removeClass('schedule-drag-color');
+      }
+    });
+  }
+
+  /**
+   * セル情報の取得
+   * @param cell セル
+   * @returns セル情報
+   */
+  getCellData(cell) {
+    let data = $(cell).attr('data-info');
+    if (!data) {
+      return null;
+    }
+    return JSON.parse(data);
   }
 
   /**
@@ -160,6 +243,79 @@ class ScheduleClass {
       height: height,
     };
     return size;
+  }
+
+  /**
+   * ドロップイベントのコールバックセット
+   */
+  setDropCallback(callback) {
+    this.dropCallback = callback;
+    return this;
+  }
+
+  /** Mousedown */
+  doMousedown(event) {
+    console.log('doMousedown:' + $(event.target).attr('id'));
+    let $target = $(event.target);
+
+    this.dragFlg = true;
+    let cellData = this.getCellData($target);
+    if (cellData == null) {
+      // TODO ★綺麗にする。
+      this.doMouseleave(event);
+      return;
+    }
+    this.dragRoomId = cellData['room_id'];
+    this.dragStartTime = cellData['time'];
+    this.dragEndTime = cellData['time'];
+    this.changeColorCellRange(this.dragRoomId, this.dragStartTime, this.dragStartTime);
+  }
+
+  /** mousemove */
+  doMousemove(event) {
+    if (!this.dragFlg) {
+      return;
+    }
+    console.log('doMousemove:' + $(event.target).attr('id'));
+    let $target = $(event.target);
+    let cellData = this.getCellData($target);
+    if (cellData == null) {
+      // TODO ★綺麗にする。
+      this.doMouseleave(event);
+      return;
+    }
+
+    this.dragEndTime = cellData['time'];
+    this.changeColorCellRange(this.dragRoomId, this.dragStartTime, this.dragEndTime);
+  }
+
+  /** mouseup */
+  doMouseup(event) {
+    if (!this.dragFlg) {
+      return;
+    }
+    console.log('doMouseup:' + $(event.target).attr('id'));
+    this.dragFlg = false;
+    this.changeColorCellRange(this.dragRoomId, null, null);
+
+    // データセット
+    let data = {
+      room_id: this.dragRoomId,
+      start_time: this.dragStartTime,
+      end_time: this.getNextTime(this.dragEndTime).format('HH:mm'),
+    };
+    // コールバック実行
+    this.dropCallback(data);
+  }
+
+  /** mouseleave */
+  doMouseleave(event) {
+    if (!this.dragFlg) {
+      return;
+    }
+    console.log('doMouseleave:' + $(event.target).attr('id'));
+    this.dragFlg = false;
+    this.changeColorCellRange(this.dragRoomId, null, null);
   }
 }
 

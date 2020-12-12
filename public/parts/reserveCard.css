@@ -1,9 +1,16 @@
 .reserve-card {
   position: absolute;
-  background: rgba(255, 0, 0, 0.35);
   cursor: pointer;
 }
 
 .reserve-card div {
   margin: -15px;
+}
+
+.reserve-card-self {
+  background: rgba(255, 25, 0, 0.35);
+}
+
+.reserve-card-not-self {
+  background: rgba(0, 161, 255, 0.35);
 }

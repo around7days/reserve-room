@@ -65,7 +65,9 @@ class reserveFormClass {
                 <div class="form-row">
                   <div class="form-group col-4">
                     <label class="col-form-label">パスワード</label>
-                    <input type="password" class="form-control" data-id="password" />
+                    <input type="password" class="form-control" data-id="password" autocomplete="off"/>
+                    <input type="password" name="dummy1" value="" style="display:none;" disabled><!-- パスワード自動保存対策 -->
+                    <input type="password" name="dummy2" value="" style="display:none;" disabled><!-- パスワード自動保存対策 -->
                   </div>
                 </div>
               </div>
@@ -94,7 +96,7 @@ class reserveFormClass {
     // 開始時刻・終了時刻のリストボックス設定
     {
       // スケジュール定義情報の取得
-      let scheduleDefineJson = ApiUtil.getScheduleDefine();
+      let scheduleDefineJson = SETTING['schedule_define'];
       let startTime = moment(scheduleDefineJson['start_time'], 'HH:mm');
       let endTime = moment(scheduleDefineJson['end_time'], 'HH:mm');
       let interval = scheduleDefineJson['interval'];
@@ -116,6 +118,16 @@ class reserveFormClass {
     this.$form.find('[data-id=registBtn]').on('click', this.regist.bind(this));
     this.$form.find('[data-id=copyBtn]').on('click', this.regist.bind(this));
 
+    return this;
+  }
+
+  /**
+   * 画面表示処理
+   * @param ele 表示対象
+   * @returns 自身のクラス
+   */
+  render(ele) {
+    $(ele).append(this.get());
     return this;
   }
 

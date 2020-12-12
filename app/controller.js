@@ -20,14 +20,6 @@ async function isDuplicateReserve(dto) {
 
 module.exports = {
   /**
-   * 設定情報の取得
-   */
-  doGetSetting: function (req, res, next) {
-    let data = JSON.parse(fs.readFileSync('./data/setting.json', 'utf8'));
-    return res.json(data);
-  },
-
-  /**
    * 会議室一の取得
    */
   doGetRooms: async function (req, res, next) {

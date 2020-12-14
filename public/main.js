@@ -116,9 +116,15 @@ $(function () {
     // 予約カードが存在する場合は全て削除
     reserveCard.removeAll();
     // 予約情報一覧の取得
-    let reserveJson = ApiUtil.getReserveList(targetDate);
+    let reserveList = ApiUtil.getReserveList(targetDate);
+    // TODO ★データレイアウトの加工
+    reserveList.forEach((data) => {
+      data['date'] = moment(data['start_time']).format('YYYY-MM-DD');
+      data['start_time'] = moment(data['start_time']).format('HH:mm');
+      data['end_time'] = moment(data['end_time']).format('HH:mm');
+    });
     // 予約情報からカードを作成してスケジュールにセット
-    reserveJson.forEach(createCard);
+    reserveList.forEach(createCard);
   }
 
   /**

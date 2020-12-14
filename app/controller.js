@@ -11,8 +11,8 @@ const validator = require('./validator');
  */
 async function isDuplicateReserve(dto) {
   let roomId = dto['room_id'];
-  let startDateTime = dto['date'] + ' ' + dto['start_time'];
-  let endDateTime = dto['date'] + ' ' + dto['end_time'];
+  let startDateTime = dto['start_time'];
+  let endDateTime = dto['end_time'];
   let id = dto['id'];
   let isDuplicate = await model.isDuplicateReserve(roomId, startDateTime, endDateTime, id);
   return isDuplicate;

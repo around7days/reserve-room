@@ -229,6 +229,10 @@ class reserveFormClass {
    */
   regist() {
     let data = this.getData();
+    // TODO ★データレイアウトの加工
+    data['start_time'] = data['date'] + ' ' + data['start_time'];
+    data['end_time'] = data['date'] + ' ' + data['end_time'];
+
     ApiUtil.registReserve(data, this.execCallback.bind(this));
     return this;
   }
@@ -239,6 +243,10 @@ class reserveFormClass {
    */
   update() {
     let data = this.getData();
+    // TODO ★データレイアウトの加工
+    data['start_time'] = data['date'] + ' ' + data['start_time'];
+    data['end_time'] = data['date'] + ' ' + data['end_time'];
+
     ApiUtil.updateReserve(data, this.execCallback.bind(this));
     return this;
   }

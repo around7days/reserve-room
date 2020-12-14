@@ -1,3 +1,7 @@
 .display-none {
   display: none;
 }
+
+:invalid {
+  background: rgb(255, 211, 246);
+}

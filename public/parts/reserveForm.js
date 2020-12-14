@@ -31,41 +31,41 @@ class reserveFormClass {
                   <input type="hidden" data-id="id" />
                   <div class="form-group col-4">
                     <label class="col-form-label">氏名</label>
-                    <input type="text" class="form-control" data-id="userNm" />
+                    <input type="text" class="form-control" data-id="userNm" required />
                   </div>
                   <div class="form-group col">
                     <label class="col-form-label">部署</label>
-                    <input type="text" class="form-control" data-id="deptNm" />
+                    <input type="text" class="form-control" data-id="deptNm" required />
                   </div>
                 </div>
                 <div class="form-row">
                   <div class="form-group col-auto">
                     <label class="col-form-label">会議室</label>
-                    <select class="form-control" data-id="roomId"></select>
+                    <select class="form-control" data-id="roomId" required ></select>
                   </div>
                   <div class="form-group col">
                     <label class="col-form-label">利用用途</label>
-                    <input type="text" class="form-control" data-id="reason" />
+                    <input type="text" class="form-control" data-id="reason" required />
                   </div>
                 </div>
                 <div class="form-row">
                   <div class="form-group col-auto">
                     <label class="col-form-label">日付</label>
-                    <input type="date" class="form-control" data-id="date" />
+                    <input type="date" class="form-control" data-id="date" required />
                   </div>
                   <div class="form-group col-auto">
                     <label class="col-form-label">開始時刻</label>
-                    <select class="form-control" data-id="startTime"></select>
+                    <select class="form-control" data-id="startTime" required ></select>
                   </div>
                   <div class="form-group col-auto">
                     <label class="col-form-label">終了時刻</label>
-                    <select class="form-control" data-id="endTime"></select>
+                    <select class="form-control" data-id="endTime" required ></select>
                   </div>
                 </div>
                 <div class="form-row">
                   <div class="form-group col-4">
                     <label class="col-form-label">パスワード</label>
-                    <input type="password" class="form-control" data-id="password" autocomplete="off"/>
+                    <input type="password" class="form-control" data-id="password" autocomplete="off" required />
                     <input type="password" name="dummy1" value="" style="display:none;" disabled><!-- パスワード自動保存対策 -->
                     <input type="password" name="dummy2" value="" style="display:none;" disabled><!-- パスワード自動保存対策 -->
                   </div>

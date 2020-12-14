@@ -57,8 +57,8 @@ class ApiUtil {
    */
   static registReserve(data, callback) {
     // TODO ★データレイアウトの加工
-    // data['start_time'] = data['date'] + ' ' + data['start_time'];
-    // data['end_time'] = data['date'] + ' ' + data['end_time'];
+    data['start_time'] = data['date'] + ' ' + data['start_time'];
+    data['end_time'] = data['date'] + ' ' + data['end_time'];
 
     $.ajax({
       url: SERVER_URL + '/reserve',
@@ -69,7 +69,6 @@ class ApiUtil {
         dept_nm: data['dept_nm'],
         room_id: data['room_id'],
         reason: data['reason'],
-        date: data['date'],
         start_time: data['start_time'],
         end_time: data['end_time'],
         password: data['password'],
@@ -90,8 +89,9 @@ class ApiUtil {
    */
   static updateReserve(data, callback) {
     // TODO ★データレイアウトの加工
-    // data['start_time'] = data['date'] + ' ' + data['start_time'];
-    // data['end_time'] = data['date'] + ' ' + data['end_time'];
+    data['start_time'] = data['date'] + ' ' + data['start_time'];
+    data['end_time'] = data['date'] + ' ' + data['end_time'];
+
     $.ajax({
       url: SERVER_URL + '/reserve',
       type: 'PUT',
@@ -102,7 +102,6 @@ class ApiUtil {
         dept_nm: data['dept_nm'],
         room_id: data['room_id'],
         reason: data['reason'],
-        date: data['date'],
         start_time: data['start_time'],
         end_time: data['end_time'],
         password: data['password'],

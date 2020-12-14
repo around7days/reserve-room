@@ -195,8 +195,8 @@ module.exports = {
       $dept_nm: dto.dept_nm,
       $reason: dto.reason,
       $room_id: dto.room_id,
-      $start_time: dto.date + ' ' + dto.start_time,
-      $end_time: dto.date + ' ' + dto.end_time,
+      $start_time: dto.start_time,
+      $end_time: dto.end_time,
       $password: dto.password,
     };
 
@@ -232,8 +232,8 @@ module.exports = {
       $dept_nm: dto.dept_nm,
       $reason: dto.reason,
       $room_id: dto.room_id,
-      $start_time: dto.date + ' ' + dto.start_time,
-      $end_time: dto.date + ' ' + dto.end_time,
+      $start_time: dto.start_time,
+      $end_time: dto.end_time,
     };
 
     // SQL実行

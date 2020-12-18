@@ -59,7 +59,7 @@ class ScheduleClass {
 
       // ヘッダ行・フッタ行に追加
       $thead.append($tr.clone());
-      // $tfoot.append($tr.clone());
+      $tfoot.append($tr.clone());
     }
 
     // 明細行の生成

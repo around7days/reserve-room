@@ -28,6 +28,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
 
     <!-- 独自 -->
+    <link rel="stylesheet" href="./main.css" />
     <link rel="stylesheet" href="./com/common.css" />
     <link rel="stylesheet" href="./parts/reserveCard.css" />
     <link rel="stylesheet" href="./parts/schedule.css" />
@@ -41,7 +42,7 @@
   </head>
   <body>
     <!-- ヘッダ -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
       <span class="navbar-brand mb-0 h1">会議室予約システム</span>
     </nav>
 
@@ -51,7 +52,7 @@
 
       <div class="row">
         <!-- サイドバー -->
-        <div class="col-3 side-content">
+        <div class="col-3 position-fixed">
           <div class="pt-4">
             <!-- カレンダー -->
             <div>
@@ -71,7 +72,7 @@
             </div>
             <hr class="pt-2" />
             <!-- 表示設定 -->
-            <h5>表示設定</h5>
+            <h5>表示設定（未実装）</h5>
             <div>
               <div class="form-check">
                 <input type="checkbox" class="form-check-input" id="disp-user-all" checked />
@@ -94,7 +95,7 @@
         </div>
 
         <!-- メインコンテンツ -->
-        <div class="col-9 main-content">
+        <div class="col-9 offset-3">
           <div class="pt-4">
             <div id="scheduleArea"></div>
           </div>

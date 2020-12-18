@@ -2,10 +2,10 @@
   user-select: none;
 }
 
-.schedule-table thead th {
+/* .schedule-table thead th {
   position: sticky;
   top: 0;
-}
+} */
 
 .schedule-table tbody:active {
   cursor: s-resize;

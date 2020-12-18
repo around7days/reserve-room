@@ -1,10 +1,4 @@
 $(function () {
-  /** サーバURL */
-  // const SERVER_URL = '';
-  const SERVER_URL = 'http://localhost:3000';
-  // 当日日付の取得
-  const SYSDATE = new moment();
-
   /** 初期処理 */
   init();
 
@@ -14,18 +8,14 @@ $(function () {
   /** 個人設定ボタン押下 */
   $('#userSettingBtn').on('click', showUserSettingForm);
 
-  /** カレンダー：クリック */
-  // -------------------------------------------------------------------
-  // -------------------------------------------------------------------
-  // -------------------------------------------------------------------
-  // -------------------------------------------------------------------
-
   /**
    * 初期処理
    */
   function init() {
+    // 当日日付の取得
+    let sysdate = new moment();
     // 日付設定
-    setTargetDate(SYSDATE);
+    setTargetDate(sysdate);
     // カレンダー表示
     createCalender();
     // 予情報フォームの生成
@@ -35,7 +25,7 @@ $(function () {
     // スケジュール生成
     createSchedule();
     // 予約カードの作成
-    createCardAll(SYSDATE);
+    createCardAll(sysdate);
   }
 
   /**

@@ -6,10 +6,14 @@ log4js.configure({
       type: 'console',
     },
     fileLog: {
-      type: 'file',
+      type: 'dateFile',
       filename: './log/app.log',
       pattern: '-yyyy-MM-dd',
       backups: '30',
+      layout: {
+        type: 'pattern',
+        pattern: '[%d{yyyy-MM-dd hh:mm:ss.SSS}] [%p] %c - %m',
+      },
     },
   },
   categories: {

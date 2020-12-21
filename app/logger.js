@@ -1,9 +1,25 @@
 const log4js = require('log4js');
 
-const logger = log4js.getLogger('app');
-logger.level = 'debug';
+log4js.configure({
+  appenders: {
+    consoleLog: {
+      type: 'console',
+    },
+    fileLog: {
+      type: 'file',
+      filename: './log/app.log',
+      pattern: '-yyyy-MM-dd',
+      backups: '30',
+    },
+  },
+  categories: {
+    default: {
+      appenders: ['consoleLog', 'fileLog'],
+      level: 'debug',
+    },
+  },
+});
 
-const accessLogger = log4js.getLogger('access');
-accessLogger.level = 'debug';
+const logger = log4js.getLogger('default');
 
 module.exports = logger;

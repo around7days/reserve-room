@@ -9,6 +9,9 @@ const log4js = require('log4js');
 const router = require('./router');
 const logger = require('./logger');
 
+/* アクセスログ設定 */
+app.use(log4js.connectLogger(logger));
+
 /* サーバを3000番ポート待ち受け */
 const server = app.listen(port, () => {
   logger.info('Node.js is listening to PORT:' + server.address().port);
@@ -30,8 +33,5 @@ app.use(express.urlencoded({ extended: false }));
 /* ルーティング設定 */
 app.use('/', router);
 app.use(express.static(path.join(__dirname, '../public')));
-
-/* アクセスログ設定 */
-app.use(log4js.connectLogger(logger));
 
 module.exports = app;

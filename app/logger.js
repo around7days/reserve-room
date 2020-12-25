@@ -7,7 +7,7 @@ log4js.configure({
     },
     fileLog: {
       type: 'dateFile',
-      filename: './log/app.log',
+      filename: './logs/app.log',
       pattern: '-yyyy-MM-dd',
       backups: '30',
       layout: {

@@ -48,7 +48,7 @@ $(function () {
       },
     });
     $('#datepicker') //
-      .css('transform', 'scale(0.9, 0.9)')
+      .css('transform', 'scale(0.8, 0.8)')
       .css('margin-top', '-10px')
       .css('margin-left', '-30px');
   }

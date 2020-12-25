@@ -99,6 +99,7 @@ class ScheduleClass {
       .on('mouseover', this.doMousemove.bind(this))
       .on('mouseup', this.doMouseup.bind(this));
     $tbody.on('mouseleave', this.doMouseleave.bind(this));
+    $tbody.find('tr td.table-light').on('mouseover', this.doMouseleave.bind(this));
 
     return this;
   }

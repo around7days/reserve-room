@@ -58,6 +58,13 @@ class UserSettingFormClass {
       this.saveDataByStorage(data).hide();
     });
 
+    // Enter押下イベント設定
+    this.$form.keypress((e) => {
+      if (e.which == 13) {
+        this.$form.find('[data-id=saveBtn]').click();
+      }
+    });
+
     return this;
   }
 

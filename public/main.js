@@ -37,7 +37,7 @@ $(function () {
       dateFormat: 'yy-mm-dd',
       showOtherMonths: true,
       selectOtherMonths: true,
-      minDate: 0,
+      minDate: -30,
       onSelect: function (dateText, inst) {
         let date = moment(dateText);
         // 日付の再設定
@@ -48,7 +48,7 @@ $(function () {
       },
     });
     $('#datepicker') //
-      .css('transform', 'scale(0.8, 0.8)')
+      .css('transform', 'scale(0.85, 0.85)')
       .css('margin-top', '-10px')
       .css('margin-left', '-30px');
   }

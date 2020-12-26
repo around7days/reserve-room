@@ -7,6 +7,7 @@ class reserveFormClass {
    */
   constructor() {
     this.$form = null;
+    this.showRegist; // true:登録モード false:更新モード
     this.successCallback;
   }
   /**
@@ -112,11 +113,25 @@ class reserveFormClass {
       }
     }
 
-    // イベント設定
+    // イベント設定：ボタン押下処理
     this.$form.find('[data-id=cancelBtn]').on('click', this.cancel.bind(this));
     this.$form.find('[data-id=updateBtn]').on('click', this.update.bind(this));
     this.$form.find('[data-id=registBtn]').on('click', this.regist.bind(this));
     this.$form.find('[data-id=copyBtn]').on('click', this.regist.bind(this));
+
+    // イベント設定：初期表示処理（初期フォーカス設定）
+    this.$form.on('shown.bs.modal', this.setBlankFocus.bind(this));
+
+    // イベント設定：Enter押下処理
+    this.$form.keypress((e) => {
+      if (e.which == 13) {
+        if (this.showRegist == true) {
+          this.$form.find('[data-id=registBtn]').click();
+        } else {
+          this.$form.find('[data-id=updateBtn]').click();
+        }
+      }
+    });
 
     return this;
   }
@@ -191,10 +206,11 @@ class reserveFormClass {
    * @returns 自身のクラス
    */
   showNew() {
-    $('[data-id=cancelBtn]').addClass('display-none');
-    $('[data-id=updateBtn]').addClass('display-none');
-    $('[data-id=registBtn]').removeClass('display-none');
-    $('[data-id=copyBtn]').addClass('display-none');
+    this.$form.find('[data-id=cancelBtn]').hide();
+    this.$form.find('[data-id=updateBtn]').hide();
+    this.$form.find('[data-id=registBtn]').show();
+    this.$form.find('[data-id=copyBtn]').hide();
+    this.showRegist = true;
     this.setMessage(null);
     this.$form.modal('show');
     return this;
@@ -205,10 +221,11 @@ class reserveFormClass {
    * @returns 自身のクラス
    */
   showUpdate() {
-    $('[data-id=cancelBtn]').removeClass('display-none');
-    $('[data-id=updateBtn]').removeClass('display-none');
-    $('[data-id=registBtn]').addClass('display-none');
-    $('[data-id=copyBtn]').removeClass('display-none');
+    this.$form.find('[data-id=cancelBtn]').show();
+    this.$form.find('[data-id=updateBtn]').show();
+    this.$form.find('[data-id=registBtn]').hide();
+    this.$form.find('[data-id=copyBtn]').show();
+    this.showRegist = false;
     this.setMessage(null);
     this.$form.modal('show');
     return this;
@@ -221,6 +238,20 @@ class reserveFormClass {
   hide() {
     this.$form.modal('hide');
     return this;
+  }
+
+  /**
+   * 値が空白の項目にフォーカスを合わせる
+   * @returns 自身のクラス
+   */
+  setBlankFocus() {
+    // TODO 手抜きでtextのみ
+    let ele = this.$form.find('input[type=text]').each((index, element) => {
+      if ($(element).val() == '') {
+        $(element).focus();
+        return false;
+      }
+    });
   }
 
   /**

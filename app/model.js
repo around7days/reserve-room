@@ -12,6 +12,9 @@ let db = new sqlite3.Database('./data/sqlite.db', (err) => {
   logger.info('Connected to the database "./data/sqlite.db"');
 });
 
+/**
+ * ログ出力設定
+ */
 db.on('trace', (sql) => {
   logger.debug(sql);
 });

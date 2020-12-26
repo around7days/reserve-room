@@ -66,9 +66,7 @@ class reserveFormClass {
                 <div class="form-row">
                   <div class="form-group col-4">
                     <label class="col-form-label">パスワード</label>
-                    <input type="password" class="form-control" data-id="password" autocomplete="off" required />
-                    <input type="password" name="dummy1" value="" style="display:none;" disabled><!-- パスワード自動保存対策 -->
-                    <input type="password" name="dummy2" value="" style="display:none;" disabled><!-- パスワード自動保存対策 -->
+                    <input type="text" class="form-control" data-id="password" autocomplete="off" required />
                   </div>
                 </div>
               </div>

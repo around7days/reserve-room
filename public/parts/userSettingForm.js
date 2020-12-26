@@ -39,7 +39,7 @@ class UserSettingFormClass {
                 <div class="form-row">
                   <div class="form-group col-4">
                     <label class="col-form-label">パスワード</label>
-                    <input type="password" class="form-control" data-id="defPassword" autocomplete="off" />
+                    <input type="text" class="form-control" data-id="defPassword" autocomplete="off" />
                   </div>
                 </div>
               </div>

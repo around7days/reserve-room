@@ -48,18 +48,18 @@ class ScheduleClass {
       let $tr = $('<tr>');
 
       // 時刻列の追加
-      let $timeTd = $('<th>').css('width', '60px').text('時刻');
+      let $timeTd = $('<th>').addClass('time-row').text('時刻');
       $tr.append($timeTd);
 
       // 会議室列の追加
       roomList.forEach((room) => {
-        let $roomTd = $('<th>').css('width', '100px').text(room['room_nm']);
+        let $roomTd = $('<th>').addClass('room-row').text(room['room_nm']);
         $tr.append($roomTd);
       });
 
-      // ヘッダ行・フッタ行に追加
+      // ヘッダ行に追加
       $thead.append($tr.clone());
-      $tfoot.append($tr.clone());
+      // $tfoot.append($tr.clone());
     }
 
     // 明細行の生成
@@ -256,7 +256,7 @@ class ScheduleClass {
 
   /** Mousedown */
   doMousedown(event) {
-    console.log('doMousedown:' + $(event.target).attr('id'));
+    // console.log('doMousedown:' + $(event.target).attr('id'));
     let $target = $(event.target);
 
     this.dragFlg = true;
@@ -277,7 +277,7 @@ class ScheduleClass {
     if (!this.dragFlg) {
       return;
     }
-    console.log('doMousemove:' + $(event.target).attr('id'));
+    // console.log('doMousemove:' + $(event.target).attr('id'));
     let $target = $(event.target);
     let cellData = this.getCellData($target);
     if (cellData == null) {
@@ -295,7 +295,7 @@ class ScheduleClass {
     if (!this.dragFlg) {
       return;
     }
-    console.log('doMouseup:' + $(event.target).attr('id'));
+    // console.log('doMouseup:' + $(event.target).attr('id'));
     this.dragFlg = false;
     this.changeColorCellRange(this.dragRoomId, null, null);
 
@@ -314,7 +314,7 @@ class ScheduleClass {
     if (!this.dragFlg) {
       return;
     }
-    console.log('doMouseleave:' + $(event.target).attr('id'));
+    // console.log('doMouseleave:' + $(event.target).attr('id'));
     this.dragFlg = false;
     this.changeColorCellRange(this.dragRoomId, null, null);
   }

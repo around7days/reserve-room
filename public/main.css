@@ -1,3 +1,9 @@
-.container-fluid {
+/* .container-fluid {
+  max-width: none !important;
   width: 1024px;
+} */
+
+/* JQueryカレンダーサイズ指定 */
+div.ui-datepicker {
+  font-size: 90%;
 }

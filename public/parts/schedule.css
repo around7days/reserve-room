@@ -2,17 +2,26 @@
   user-select: none;
 }
 
-/* .schedule-table thead th {
+.schedule-table thead th {
   position: sticky;
-  top: 0;
-} */
+  top: 54px;
+  z-index: 999;
+}
 
-.schedule-table tbody:active {
-  cursor: s-resize;
+.schedule-table tbody {
+  cursor: cell;
 }
 
 .schedule-table tbody tr {
   height: 40px;
+}
+
+/* .schedule-table .time-row {
+  width: 10%;
+} */
+
+.schedule-table .room-row {
+  min-width: 80px;
 }
 
 .schedule-drag-color {

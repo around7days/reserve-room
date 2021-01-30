@@ -43,6 +43,14 @@ class ReserveCardClass {
   }
 
   /**
+   * 予約カードエレメントの全取得
+   * @returns 予約カード一覧
+   */
+  getAll() {
+    return $('div.reserve-card');
+  }
+
+  /**
    * 予約カードエレメントの取得
    * @param card 予約カード
    * @returns 自身のクラス

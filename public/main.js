@@ -2,11 +2,8 @@ $(function () {
   /** 初期処理 */
   init();
 
-  /** 新規予約ボタン押下 */
-  $('#reserveNewBtn').on('click', showReserveFormNew);
-
-  /** 個人設定ボタン押下 */
-  $('#userSettingBtn').on('click', showUserSettingForm);
+  /** 画面リサイズ処理（カードサイズの再設定） */
+  $(window).resize(() => resizeCardAll());
 
   /**
    * 初期処理
@@ -16,8 +13,8 @@ $(function () {
     let sysdate = new moment();
     // 日付設定
     setTargetDate(sysdate);
-    // カレンダー表示
-    createCalender();
+    // サイドエリアの生成
+    createSideArea();
     // 予情報フォームの生成
     createReserveForm();
     // 個人情報設定フォームの生成
@@ -25,13 +22,44 @@ $(function () {
     // スケジュール生成
     createSchedule();
     // 予約カードの作成
-    createCardAll(sysdate);
+    createCardAll();
   }
 
   /**
-   * カレンダー作成
+   * サイドエリアの作成
    */
-  function createCalender() {
+  function createSideArea() {
+    // サイドエリア生成
+    let $ele = $(`
+      <!-- カレンダー -->
+      <div>
+        <div class="d-inline">
+          <h5 class="d-inline pr-2">カレンダー</h5>
+          <button id="reserveNewBtn" class="btn btn-outline-primary btn-sm">新規予約</button>
+        </div>
+        <div id="datepicker"></div>
+      <hr />
+      <div class="pt-2"></div>
+      <!-- 個人設定 -->
+      <div>
+        <div class="d-inline">
+          <h5 class="d-inline pr-2">個人設定</h5>
+          <button id="userSettingBtn" class="btn btn-outline-primary btn-sm">表示</button>
+        </div>
+      </div>
+      <div class="pt-4"></div>
+      <!-- 表示設定 -->
+      <!-- <div>
+        <h5>表示設定（未実装）</h5>
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="disp-user-all" checked />
+          <label class="form-check-label" for="disp-user-all">全選択/全解除</label>
+        </div>
+      </div> -->
+    `);
+    $('#sideArea').append($ele);
+
+    // カレンダー設定
     $('#datepicker').datepicker({
       firstDay: 1,
       dateFormat: 'yy-mm-dd',
@@ -47,10 +75,12 @@ $(function () {
         createCardAll(date);
       },
     });
-    $('#datepicker') //
-      .css('transform', 'scale(0.85, 0.85)')
-      .css('margin-top', '-10px')
-      .css('margin-left', '-30px');
+
+    // 新規予約ボタン押下イベント設定
+    $('#reserveNewBtn').on('click', showReserveFormNew);
+
+    // 個人設定ボタン押下イベント設定
+    $('#userSettingBtn').on('click', showUserSettingForm);
   }
 
   /**
@@ -103,6 +133,10 @@ $(function () {
    * @param targetDate 対象日付
    */
   function createCardAll(targetDate) {
+    if (!targetDate) {
+      targetDate = getTargetDate();
+    }
+
     // 予約カードが存在する場合は全て削除
     reserveCard.removeAll();
     // 予約情報一覧の取得
@@ -162,6 +196,20 @@ $(function () {
       console.log('エラー予約情報：' + JSON.stringify(data));
       console.log('エラー内容：' + e);
     }
+  }
+
+  /**
+   * 予約カードのリサイズ（全予約カードの再作成）
+   */
+  function resizeCardAll() {
+    let $cardList = reserveCard.getAll();
+    $cardList.each((idx, ele) => {
+      // 予約情報の取得
+      let data = reserveCard.set($(ele)).getData();
+      // 予約カードサイズの再設定
+      let size = schedule.getCellSize(data['room_id'], data['start_time'], data['end_time']);
+      reserveCard.setSize(size['width'], size['height']);
+    });
   }
 
   /**

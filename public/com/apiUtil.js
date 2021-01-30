@@ -6,7 +6,7 @@ class ApiUtil {
   static getRoomList() {
     let jsonData;
     $.ajax({
-      url: SERVER_URL + '/rooms',
+      url: SERVER_URL + '/api/rooms',
       type: 'GET',
       dataType: 'json',
       async: false,
@@ -28,7 +28,7 @@ class ApiUtil {
   static getReserveList(targetDate) {
     let jsonData;
     $.ajax({
-      url: SERVER_URL + '/reserves/search',
+      url: SERVER_URL + '/api/reserves/search',
       type: 'GET',
       dataType: 'json',
       data: { date: targetDate.format('YYYY-MM-DD') },
@@ -50,7 +50,7 @@ class ApiUtil {
    */
   static registReserve(data, callback) {
     $.ajax({
-      url: SERVER_URL + '/reserve',
+      url: SERVER_URL + '/api/reserve',
       type: 'POST',
       dataType: 'json',
       data: {
@@ -78,7 +78,7 @@ class ApiUtil {
    */
   static updateReserve(data, callback) {
     $.ajax({
-      url: SERVER_URL + '/reserve',
+      url: SERVER_URL + '/api/reserve',
       type: 'PUT',
       dataType: 'json',
       data: {
@@ -106,7 +106,7 @@ class ApiUtil {
    */
   static deleteReserve(id, password, callback) {
     $.ajax({
-      url: SERVER_URL + '/reserve',
+      url: SERVER_URL + '/api/reserve',
       type: 'DELETE',
       dataType: 'json',
       data: {

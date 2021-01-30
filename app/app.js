@@ -3,7 +3,6 @@
 // -----------------------------------------------------------------------------------
 const express = require('express');
 const app = express();
-const port = 3000;
 const path = require('path');
 const log4js = require('log4js');
 const router = require('./router');
@@ -13,6 +12,7 @@ const logger = require('./logger');
 app.use(log4js.connectLogger(logger));
 
 /* サーバを3000番ポート待ち受け */
+const port = 3000;
 const server = app.listen(port, () => {
   logger.info('Node.js is listening to PORT:' + server.address().port);
   logger.info('index url: http://localhost:3000/main.html'); // TODO ★テスト用★

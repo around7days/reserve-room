@@ -15,7 +15,7 @@ app.use(log4js.connectLogger(logger));
 const port = 3000;
 const server = app.listen(port, () => {
   logger.info('Node.js is listening to PORT:' + server.address().port);
-  logger.info('index url: http://localhost:3000/main.html'); // TODO ★テスト用★
+  logger.info('index url: http://localhost:' + port + '/main.html');
 });
 
 /* CORSを許可する */

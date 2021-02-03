@@ -108,4 +108,4 @@ dist
 /.setting
 
 # database
-sqlite.db
+data/sqlite.db

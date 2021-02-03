@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>会議室予約システム</title>
+
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/yeti/bootstrap.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- momentjs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/ja.js"></script>
+
+    <!-- DataTables(Bootstrap 4 + Buttons(HTML5 export + JSZip)) -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.bootstrap4.min.css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.bootstrap4.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
+
+    <!-- 独自 -->
+    <link rel="stylesheet" href="./list.css" />
+    <link rel="stylesheet" href="./com/common.css" />
+    <link rel="stylesheet" href="./parts/reserveCard.css" />
+    <link rel="stylesheet" href="./parts/schedule.css" />
+    <script src="./list.js"></script>
+    <script src="./com/const.js"></script>
+    <script src="./com/apiUtil.js"></script>
+    <script src="./parts/reserveForm.js"></script>
+  </head>
+  <body>
+    <!-- ヘッダ -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+      <a class="navbar-brand mb-0 h1" href="javascript:window.location.reload()">会議室予約システム</a>
+    </nav>
+
+    <!-- container -->
+    <div class="container-fluid">
+      <div class="row">
+        <!-- サイドバー -->
+        <div class="col-3 position-fixed">
+          <div class="pt-4">
+            <div id="sideArea"></div>
+          </div>
+        </div>
+        <!-- メインコンテンツ -->
+        <div class="col-9 offset-3">
+          <div class="pt-4">
+            <div id="reserveListArea"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 予約情報入力フォームModal -->
+    <div id="reserveFormArea"></div>
+  </body>
+
+  <!-- IEチェック -->
+  <script src="./com/checkIE.js"></script>
+</html>

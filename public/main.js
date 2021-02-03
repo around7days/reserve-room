@@ -15,18 +15,18 @@ $(function () {
     setTargetDate(sysdate);
     // サイドエリアの生成
     createSideArea();
+    // スケジュールの生成
+    createSchedule();
+    // 予約カードの作成
+    createCardAll();
     // 予情報フォームの生成
     createReserveForm();
     // 個人情報設定フォームの生成
     createUserSettingForm();
-    // スケジュール生成
-    createSchedule();
-    // 予約カードの作成
-    createCardAll();
   }
 
   /**
-   * サイドエリアの作成
+   * サイドエリアの生成
    */
   function createSideArea() {
     // サイドエリア生成
@@ -45,6 +45,15 @@ $(function () {
         <div class="d-inline">
           <h5 class="d-inline pr-2">個人設定</h5>
           <button id="userSettingBtn" class="btn btn-outline-primary btn-sm">表示</button>
+        </div>
+      </div>
+      <hr />
+      <div class="pt-2"></div>
+      <!-- 表示切替 -->
+      <div>
+        <div class="d-inline">
+          <h5 class="d-inline pr-2">表示切替</h5>
+          <a class="btn btn-outline-primary btn-sm" href="list.html">切替</a>
         </div>
       </div>
       <div class="pt-4"></div>

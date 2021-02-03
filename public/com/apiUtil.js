@@ -44,6 +44,29 @@ class ApiUtil {
   }
 
   /**
+   * 予約情報をサーバから取得
+   * @param startDate 開始日付（moment）
+   * @returns 予約情報
+   */
+  static getReserveListAll(startDate) {
+    let jsonData;
+    $.ajax({
+      url: SERVER_URL + '/api/reserves/search',
+      type: 'GET',
+      dataType: 'json',
+      data: { start_date: startDate.format('YYYY-MM-DD') },
+      async: false,
+    })
+      .done((data) => {
+        jsonData = data;
+      })
+      .fail((res) => {
+        alert('予約情報の取得に失敗しました');
+      });
+    return jsonData;
+  }
+
+  /**
    * 予約情報の登録処理
    * @param data 予約情報
    * @param callback 処理成功時のコールバック関数

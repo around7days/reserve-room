@@ -33,10 +33,7 @@ $(function () {
     let $ele = $(`
       <!-- カレンダー -->
       <div>
-        <div class="d-inline">
-          <h5 class="d-inline pr-2">カレンダー</h5>
-          <button id="reserveNewBtn" class="btn btn-outline-primary btn-sm">新規予約</button>
-        </div>
+        <h5>カレンダー</h5>
         <div id="datepicker"></div>
       <hr />
       <div class="pt-2"></div>
@@ -84,9 +81,6 @@ $(function () {
         createCardAll(date);
       },
     });
-
-    // 新規予約ボタン押下イベント設定
-    $('#reserveNewBtn').on('click', showReserveFormNew);
 
     // 個人設定ボタン押下イベント設定
     $('#userSettingBtn').on('click', showUserSettingForm);

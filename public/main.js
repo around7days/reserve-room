@@ -15,8 +15,10 @@ $(function () {
     setTargetDate(sysdate);
     // サイドエリアの生成
     createSideArea();
-    // スケジュールの生成
-    createSchedule();
+    // 日次スケジュールの生成
+    createScheduleDaily();
+    // 全スケジュールの生成
+    createScheduleAll();
     // 予約カードの作成
     createCardAll();
     // 予情報フォームの生成
@@ -34,39 +36,32 @@ $(function () {
       <!-- カレンダー -->
       <div>
         <h5>カレンダー</h5>
-        <div id="datepicker"></div>
-      <hr />
-      <div class="pt-2"></div>
+        <div data-id="datepicker"></div>
+      </div>
+      <hr class="pt-2" />
       <!-- 個人設定 -->
       <div>
-        <div class="d-inline">
-          <h5 class="d-inline pr-2">個人設定</h5>
-          <button id="userSettingBtn" class="btn btn-outline-primary btn-sm">表示</button>
-        </div>
+        <h5>個人設定</h5>
+        <button id="userSettingBtn" class="btn btn-outline-primary btn-sm">表示</button>
       </div>
-      <hr />
-      <div class="pt-2"></div>
+      <hr class="pt-2" />
       <!-- 表示切替 -->
       <div>
-        <div class="d-inline">
-          <h5 class="d-inline pr-2">表示切替</h5>
-          <a class="btn btn-outline-primary btn-sm" href="list.html">切替</a>
+        <h5>表示切替</h5>
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+          <label class="btn btn-outline-primary btn-sm active">
+            <input type="radio" data-id="dispSwitch" value="daily" checked> 日次
+          </label>
+          <label class="btn btn-outline-primary btn-sm">
+            <input type="radio" data-id="dispSwitch" value="list"> 一覧
+          </label>
         </div>
       </div>
-      <div class="pt-4"></div>
-      <!-- 表示設定 -->
-      <!-- <div>
-        <h5>表示設定（未実装）</h5>
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="disp-user-all" checked />
-          <label class="form-check-label" for="disp-user-all">全選択/全解除</label>
-        </div>
-      </div> -->
     `);
     $('#sideArea').append($ele);
 
     // カレンダー設定
-    $('#datepicker').datepicker({
+    $ele.find('[data-id=datepicker]').datepicker({
       firstDay: 1,
       dateFormat: 'yy-mm-dd',
       showOtherMonths: true,
@@ -76,10 +71,22 @@ $(function () {
         let date = moment(dateText);
         // 日付の再設定
         setTargetDate(date);
-        schedule.setDate(date);
+        scheduleDaily.setDate(date);
         // 予約カードの再作成
         createCardAll(date);
       },
+    });
+
+    // 表示切替設定
+    $ele.find('[data-id=dispSwitch]').on('change', (e) => {
+      let val = $(e.target).val();
+      if (val == 'daily') {
+        $('#scheduleDailyArea').show();
+        $('#scheduleAllArea').hide();
+      } else {
+        $('#scheduleDailyArea').hide();
+        $('#scheduleAllArea').show();
+      }
     });
 
     // 個人設定ボタン押下イベント設定
@@ -107,9 +114,9 @@ $(function () {
   }
 
   /**
-   * スケジュール作成
+   * 日次スケジュール作成
    */
-  function createSchedule() {
+  function createScheduleDaily() {
     let targetDate = getTargetDate();
 
     // 明細行のドロップ処理イベントの生成
@@ -120,7 +127,28 @@ $(function () {
     };
 
     // 画面描画
-    schedule.create().setDate(targetDate).setDropCallback(callback).render($('#scheduleArea'));
+    scheduleDaily.create().setDate(targetDate).setDropCallback(callback).render($('#scheduleDailyArea'));
+  }
+
+  /**
+   * 全スケジュール作成
+   */
+  function createScheduleAll() {
+    // 当日以降の予約情報を全て取得
+    let targetDate = getTargetDate();
+    let reserveList = ApiUtil.getReserveListAll(targetDate);
+    // データレイアウトの加工
+    reserveList.forEach((data) => {
+      data['date'] =
+        moment(data['start_time']).format('YYYY/MM/DD') +
+        ' ' +
+        moment(data['start_time']).format('HH:mm') +
+        '-' +
+        moment(data['end_time']).format('HH:mm');
+    });
+
+    // 画面描画
+    scheduleAll.create().setDate(targetDate).setDataTables(reserveList).render($('#scheduleAllArea'));
   }
 
   /**
@@ -162,10 +190,10 @@ $(function () {
   function createCard(data) {
     try {
       // 予約カードサイズの生成
-      let size = schedule.getCellSize(data['room_id'], data['start_time'], data['end_time']);
+      let size = scheduleDaily.getCellSize(data['room_id'], data['start_time'], data['end_time']);
 
       // 予約カードの表示位置を取得
-      let $target = schedule.getCell(data['room_id'], data['start_time']);
+      let $target = scheduleDaily.getCell(data['room_id'], data['start_time']);
 
       // 予約カードの色を生成
       let isSelfUserFlg = isSelfUser(data['user_nm'], data['dept_nm']);
@@ -210,7 +238,7 @@ $(function () {
       // 予約情報の取得
       let data = reserveCard.set($(ele)).getData();
       // 予約カードサイズの再設定
-      let size = schedule.getCellSize(data['room_id'], data['start_time'], data['end_time']);
+      let size = scheduleDaily.getCellSize(data['room_id'], data['start_time'], data['end_time']);
       reserveCard.setSize(size['width'], size['height']);
     });
   }

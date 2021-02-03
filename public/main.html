@@ -17,6 +17,17 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/yeti/bootstrap.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- DataTables(Bootstrap 4 + Buttons(HTML5 export + JSZip)) -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.bootstrap4.min.css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.bootstrap4.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
+
     <!-- momentjs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/ja.js"></script>
@@ -25,14 +36,15 @@
     <link rel="stylesheet" href="./main.css" />
     <link rel="stylesheet" href="./com/common.css" />
     <link rel="stylesheet" href="./parts/reserveCard.css" />
-    <link rel="stylesheet" href="./parts/schedule.css" />
+    <link rel="stylesheet" href="./parts/scheduleDaily.css" />
     <script src="./main.js"></script>
     <script src="./com/const.js"></script>
     <script src="./com/apiUtil.js"></script>
     <script src="./parts/reserveCard.js"></script>
     <script src="./parts/userSettingForm.js"></script>
     <script src="./parts/reserveForm.js"></script>
-    <script src="./parts/schedule.js"></script>
+    <script src="./parts/scheduleDaily.js"></script>
+    <script src="./parts/scheduleAll.js"></script>
   </head>
   <body>
     <!-- ヘッダ -->
@@ -53,7 +65,8 @@
       <!-- メインコンテンツ -->
       <div class="col-9 offset-3">
         <div class="pt-4">
-          <div id="scheduleArea"></div>
+          <div id="scheduleDailyArea"></div>
+          <div id="scheduleAllArea"></div>
         </div>
       </div>
     </div>

@@ -25,6 +25,9 @@ $(function () {
     createReserveForm();
     // 個人情報設定フォームの生成
     createUserSettingForm();
+
+    // TODO ★
+    $('#scheduleAllArea').hide();
   }
 
   /**
@@ -78,6 +81,7 @@ $(function () {
     });
 
     // 表示切替設定
+    // TODO ★
     $ele.find('[data-id=dispSwitch]').on('change', (e) => {
       let val = $(e.target).val();
       if (val == 'daily') {
@@ -99,8 +103,11 @@ $(function () {
   function createReserveForm() {
     // 登録/更新/削除処理後に実行するコールバック関数の作成
     let callback = function () {
+      // 日次スケジュールの再生成
       let targetDate = getTargetDate();
       createCardAll(targetDate);
+      // 全スケジュールの再生成
+      createScheduleAll();
     };
     // フォーム生成
     rsvForm.create().setSuccessCallback(callback).render($('#reserveFormArea'));
@@ -135,20 +142,24 @@ $(function () {
    */
   function createScheduleAll() {
     // 当日以降の予約情報を全て取得
-    let targetDate = getTargetDate();
+    let targetDate = new moment();
     let reserveList = ApiUtil.getReserveListAll(targetDate);
     // データレイアウトの加工
     reserveList.forEach((data) => {
-      data['date'] =
+      data['date_range'] =
         moment(data['start_time']).format('YYYY/MM/DD') +
         ' ' +
         moment(data['start_time']).format('HH:mm') +
         '-' +
         moment(data['end_time']).format('HH:mm');
+      data['date'] = moment(data['start_time']).format('YYYY-MM-DD');
+      data['start_time'] = moment(data['start_time']).format('HH:mm');
+      data['end_time'] = moment(data['end_time']).format('HH:mm');
     });
 
     // 画面描画
-    scheduleAll.create().setDate(targetDate).setDataTables(reserveList).render($('#scheduleAllArea'));
+    scheduleAll.destory();
+    scheduleAll.create().setDate(targetDate).setDataTables(reserveList, showReserveFormUpdate).render($('#scheduleAllArea'));
   }
 
   /**
@@ -172,7 +183,7 @@ $(function () {
     reserveCard.removeAll();
     // 予約情報一覧の取得
     let reserveList = ApiUtil.getReserveList(targetDate);
-    // TODO ★データレイアウトの加工
+    // データレイアウトの加工
     reserveList.forEach((data) => {
       data['date'] = moment(data['start_time']).format('YYYY-MM-DD');
       data['start_time'] = moment(data['start_time']).format('HH:mm');
@@ -202,12 +213,7 @@ $(function () {
       let clickEvent = function () {
         // 予約情報フォームの表示
         let data = reserveCard.set(this).getData();
-        if (isSelfUser(data['user_nm'], data['dept_nm'])) {
-          // 氏名・部署が一致する場合のみデフォルトパスワードを設定
-          let userSetting = usForm.getDataByStorage();
-          data['password'] = userSetting['def_password'];
-        }
-        rsvForm.setData(data).showUpdate();
+        showReserveFormUpdate(data);
       };
 
       // 予約カード生成
@@ -257,6 +263,19 @@ $(function () {
     data['date'] = getTargetDate().format('YYYY-MM-DD');
     data['password'] = userSetting['def_password'];
     rsvForm.setData(data).showNew();
+  }
+
+  /**
+   * 予約情報フォームの表示処理：更新
+   * @data 初期表示データ
+   */
+  function showReserveFormUpdate(data) {
+    if (isSelfUser(data['user_nm'], data['dept_nm'])) {
+      // 氏名・部署が一致する場合のみデフォルトパスワードを設定
+      let userSetting = usForm.getDataByStorage();
+      data['password'] = userSetting['def_password'];
+    }
+    rsvForm.setData(data).showUpdate();
   }
 
   /**

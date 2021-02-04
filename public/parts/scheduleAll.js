@@ -72,7 +72,7 @@ class ScheduleAllClass {
    * @date スケジュール情報一覧
    * @returns 自身のクラス
    */
-  setDataTables(dataList) {
+  setDataTables(dataList, clickFunction) {
     // DataTables設定
     this.$schedule.find('table').DataTable({
       data: dataList,
@@ -85,21 +85,28 @@ class ScheduleAllClass {
       ordering: true,
       processing: true,
       order: [
-        [1, 'desc'],
-        [2, 'asc'],
+        [0, 'asc'],
+        [1, 'asc'],
       ],
       info: true,
       // stateSave: true,
       columns: [
         { data: 'room_nm' }, //
-        { data: 'date' },
+        { data: 'date_range' },
         { data: 'user_nm' },
         { data: 'dept_nm' },
         { data: 'reason' },
       ],
-      // 行に全情報を埋め込む
+      // 行単位の個別設定
       createdRow: function (row, data, dataIndex) {
-        $(row).attr('data-info', JSON.stringify(data)).css('cursor', 'pointer');
+        $(row)
+          .attr('data-info', JSON.stringify(data)) // データ埋め込み
+          .css('cursor', 'pointer') // ポインタ設定
+          .on('click', function () {
+            // クリックイベント
+            let data = JSON.parse($(this).attr('data-info'));
+            clickFunction(data);
+          });
       },
     });
 
@@ -107,16 +114,25 @@ class ScheduleAllClass {
   }
 
   /**
-   * セル情報の取得
-   * @param cell セル
-   * @returns セル情報
+   * 行情報の取得
+   * @param row 行
+   * @returns 行情報
    */
-  getCellData(cell) {
-    let data = $(cell).attr('data-info');
+  getRowData(row) {
+    let data = $(row).attr('data-info');
     if (!data) {
       return null;
     }
     return JSON.parse(data);
+  }
+
+  /**
+   * スケジュールの破棄
+   */
+  destory() {
+    if (this.$schedule != null) {
+      this.$schedule.remove();
+    }
   }
 }
 

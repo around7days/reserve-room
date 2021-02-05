@@ -1,7 +1,7 @@
 /**
- * 全スケジュールクラス
+ * 一覧スケジュールクラス
  */
-class ScheduleAllClass {
+class ScheduleListClass {
   /**
    * コンストラクタ
    */
@@ -136,4 +136,4 @@ class ScheduleAllClass {
   }
 }
 
-const scheduleAll = new ScheduleAllClass();
+const scheduleList = new ScheduleListClass();

@@ -1,9 +1,9 @@
 $(function () {
-  /** 初期処理 */
-  init();
-
   /** 画面リサイズ処理（カードサイズの再設定） */
   $(window).resize(() => resizeCardAll());
+
+  /** 初期処理 */
+  init();
 
   /**
    * 初期処理
@@ -15,19 +15,18 @@ $(function () {
     setTargetDate(sysdate);
     // サイドエリアの生成
     createSideArea();
+    // スケジュール表示エリアの設定
+    switchScheduleDisp('daily');
     // 日次スケジュールの生成
     createScheduleDaily();
-    // 全スケジュールの生成
-    createScheduleAll();
+    // 一覧スケジュールの生成
+    createScheduleList();
     // 予約カードの作成
     createCardAll();
     // 予情報フォームの生成
     createReserveForm();
     // 個人情報設定フォームの生成
     createUserSettingForm();
-
-    // TODO ★
-    $('#scheduleAllArea').hide();
   }
 
   /**
@@ -76,21 +75,13 @@ $(function () {
         setTargetDate(date);
         scheduleDaily.setDate(date);
         // 予約カードの再作成
-        createCardAll(date);
+        refreshScheduleDaily();
       },
     });
 
-    // 表示切替設定
-    // TODO ★
+    // スケジュール表示切替設定
     $ele.find('[data-id=dispSwitch]').on('change', (e) => {
-      let val = $(e.target).val();
-      if (val == 'daily') {
-        $('#scheduleDailyArea').show();
-        $('#scheduleAllArea').hide();
-      } else {
-        $('#scheduleDailyArea').hide();
-        $('#scheduleAllArea').show();
-      }
+      switchScheduleDisp($(e.target).val());
     });
 
     // 個人設定ボタン押下イベント設定
@@ -103,11 +94,11 @@ $(function () {
   function createReserveForm() {
     // 登録/更新/削除処理後に実行するコールバック関数の作成
     let callback = function () {
+      // TODO ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
       // 日次スケジュールの再生成
-      let targetDate = getTargetDate();
-      createCardAll(targetDate);
-      // 全スケジュールの再生成
-      createScheduleAll();
+      refreshScheduleDaily();
+      // 一覧スケジュールの再生成
+      createScheduleList();
     };
     // フォーム生成
     rsvForm.create().setSuccessCallback(callback).render($('#reserveFormArea'));
@@ -138,9 +129,9 @@ $(function () {
   }
 
   /**
-   * 全スケジュール作成
+   * 一覧スケジュール作成
    */
-  function createScheduleAll() {
+  function createScheduleList() {
     // 当日以降の予約情報を全て取得
     let targetDate = new moment();
     let reserveList = ApiUtil.getReserveListAll(targetDate);
@@ -158,8 +149,8 @@ $(function () {
     });
 
     // 画面描画
-    scheduleAll.destory();
-    scheduleAll.create().setDate(targetDate).setDataTables(reserveList, showReserveFormUpdate).render($('#scheduleAllArea'));
+    scheduleList.destory();
+    scheduleList.create().setDate(targetDate).setDataTables(reserveList, showReserveFormUpdate).render($('#scheduleListArea'));
   }
 
   /**
@@ -171,7 +162,7 @@ $(function () {
   }
 
   /**
-   * 予約カードの作成（全予約カードの再作成）
+   * 予約カードの作成
    * @param targetDate 対象日付
    */
   function createCardAll(targetDate) {
@@ -179,8 +170,6 @@ $(function () {
       targetDate = getTargetDate();
     }
 
-    // 予約カードが存在する場合は全て削除
-    reserveCard.removeAll();
     // 予約情報一覧の取得
     let reserveList = ApiUtil.getReserveList(targetDate);
     // データレイアウトの加工
@@ -250,6 +239,39 @@ $(function () {
   }
 
   /**
+   * 日次スケジュールのリフレッシュ
+   */
+  function refreshScheduleDaily() {
+    // 予約カードが存在する場合は全て削除して再生成
+    reserveCard.removeAll();
+    createCardAll();
+  }
+
+  /**
+   * 日次スケジュールのリフレッシュ
+   */
+  function refreshScheduleList() {
+    // 当日以降の予約情報を全て取得
+    let targetDate = new moment();
+    let reserveList = ApiUtil.getReserveListAll(targetDate);
+    // データレイアウトの加工
+    reserveList.forEach((data) => {
+      data['date_range'] =
+        moment(data['start_time']).format('YYYY/MM/DD') +
+        ' ' +
+        moment(data['start_time']).format('HH:mm') +
+        '-' +
+        moment(data['end_time']).format('HH:mm');
+      data['date'] = moment(data['start_time']).format('YYYY-MM-DD');
+      data['start_time'] = moment(data['start_time']).format('HH:mm');
+      data['end_time'] = moment(data['end_time']).format('HH:mm');
+    });
+
+    // 画面描画
+    scheduleList.create().setDataTables(reserveList, showReserveFormUpdate);
+  }
+
+  /**
    * 予約情報フォームの表示処理：新規予約
    * @data 初期表示データ
    */
@@ -276,6 +298,22 @@ $(function () {
       data['password'] = userSetting['def_password'];
     }
     rsvForm.setData(data).showUpdate();
+  }
+
+  /**
+   * スケジュールの表示切替
+   * @kbn daily/list
+   */
+  function switchScheduleDisp(kbn) {
+    if (kbn == 'daily') {
+      // 日次スケジュール表示
+      $('#scheduleDailyArea').show();
+      $('#scheduleListArea').hide();
+    } else {
+      // 一覧スケジュール表示
+      $('#scheduleDailyArea').hide();
+      $('#scheduleListArea').show();
+    }
   }
 
   /**

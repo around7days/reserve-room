@@ -283,7 +283,7 @@ $(function () {
     }
 
     // 一覧スケジュール
-    if ($('#scheduleDailyArea').css('display') != 'none') {
+    if ($('#scheduleListArea').css('display') != 'none') {
       scheduleList.setDate(getTargetDate());
       createScheduleList();
     }

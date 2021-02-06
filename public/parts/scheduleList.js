@@ -16,16 +16,15 @@ class ScheduleListClass {
   create() {
     // テーブル要素の生成
     this.$schedule = $(`
-      <div class="d-inline">
-        <h5 class="d-inline" data-id="dispDate"></h5>
+      <div class="pt-1">
+        <h5 data-id="dispDate"></h5>
       </div>
-      <div class="pt-2"></div>
       <div>
         <table class="table table-sm table-bordered table-hover" style="width:100%">
           <thead class="thead-dark">
             <tr>
-              <th>会議室</th>
               <th>日付</th>
+              <th>会議室</th>
               <th>氏名</th>
               <th>部署</th>
               <th>利用用途</th>
@@ -58,7 +57,7 @@ class ScheduleListClass {
 
   /**
    * 日付の設定
-   * @date 日付
+   * @param date 日付
    * @returns 自身のクラス
    */
   setDate(date) {
@@ -69,10 +68,11 @@ class ScheduleListClass {
 
   /**
    * スケジュール情報の反映
-   * @date スケジュール情報一覧
+   * @param date スケジュール情報一覧
+   * @param rowClickCallback 行クリックイベント
    * @returns 自身のクラス
    */
-  setDataTables(dataList, clickFunction) {
+  setDataTables(dataList, rowClickCallback) {
     // DataTables設定
     this.$schedule.find('table').DataTable({
       data: dataList,
@@ -84,15 +84,18 @@ class ScheduleListClass {
       searching: true,
       ordering: true,
       processing: true,
-      order: [
-        [0, 'asc'],
-        [1, 'asc'],
-      ],
+      // order: [[0, 'asc']],
       info: true,
-      // stateSave: true,
+      stateSave: true,
+      stateSaveCallback: function (settings, data) {
+        localStorage.setItem('schedule#DataTables', JSON.stringify(data));
+      },
+      stateLoadCallback: function (settings) {
+        return JSON.parse(localStorage.getItem('schedule#DataTables'));
+      },
       columns: [
-        { data: 'room_nm' }, //
-        { data: 'date_range' },
+        { data: 'date_range' }, //
+        { data: 'room_nm' },
         { data: 'user_nm' },
         { data: 'dept_nm' },
         { data: 'reason' },
@@ -102,28 +105,15 @@ class ScheduleListClass {
         $(row)
           .attr('data-info', JSON.stringify(data)) // データ埋め込み
           .css('cursor', 'pointer') // ポインタ設定
-          .on('click', function () {
-            // クリックイベント
-            let data = JSON.parse($(this).attr('data-info'));
-            clickFunction(data);
+          .on('click', (event) => {
+            // 行クリックイベント
+            let data = JSON.parse($(event.currentTarget).attr('data-info'));
+            rowClickCallback(data);
           });
       },
     });
 
     return this;
-  }
-
-  /**
-   * 行情報の取得
-   * @param row 行
-   * @returns 行情報
-   */
-  getRowData(row) {
-    let data = $(row).attr('data-info');
-    if (!data) {
-      return null;
-    }
-    return JSON.parse(data);
   }
 
   /**

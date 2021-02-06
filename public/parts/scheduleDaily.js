@@ -20,10 +20,9 @@ class ScheduleDailyClass {
    */
   create() {
     this.$schedule = $(`
-      <div class="d-inline">
-        <h5 class="d-inline" data-id="dispDate"></h5>
+      <div class="pt-1">
+        <h5 data-id="dispDate"></h5>
       </div>
-      <div class="pt-2"></div>
       <div>
         <table class="table table-sm table-bordered schedule-table">
           <thead class="thead-dark"></thead>
@@ -124,7 +123,7 @@ class ScheduleDailyClass {
 
   /**
    * 日付の設定
-   * @date 日付
+   * @param date 日付
    * @returns 自身のクラス
    */
   setDate(date) {
@@ -157,7 +156,7 @@ class ScheduleDailyClass {
 
   /**
    * 次の時間の取得
-   * @param 時間
+   * @param time 時間
    * @returns 次の時間
    */
   getNextTime(time) {
@@ -190,7 +189,8 @@ class ScheduleDailyClass {
   /**
    * セル範囲の背景色を変更
    * @param roomId 会議室ID
-   * @param time 時刻
+   * @param startTime 開始時刻
+   * @param endTime 終了時刻
    */
   changeColorCellRange(roomId, startTime, endTime) {
     this.getTimeList().forEach((time) => {

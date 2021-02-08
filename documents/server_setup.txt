@@ -1,0 +1,28 @@
+# -------------------------------------
+# rootユーザで実行
+# -------------------------------------
+
+# ユーザ生成
+useradd rs01
+passwd rs01
+
+# 配備先フォルダ生成
+mkdir -p /opt/rs01/reserve-room
+chown -R rs01:rs01 /opt/rs01
+
+# nodejs, npmのインストール
+yum install https://rpm.nodesource.com/pub_14.x/el/7/x86_64/nodesource-release-el7-1.noarch.rpm
+yum install nodejs npm
+
+# sqliteのインストール（入ってなければ）
+yum install sqlite
+
+# -------------------------------------
+# rs01ユーザで実行
+# -------------------------------------
+# アプリ配備
+/opt/rs01/reserve-room にアプリを配備
+    ※設計書,data,logs,node_modules フォルダは配備不要
+
+# DB生成
+sqlite3 /opt/rs01/reserve-room/data/sqlite.db

@@ -29,8 +29,8 @@ yum install gcc-c++
 
 # DBセットアップ
 mkdir /opt/rs01/reserve-room/data
-sqlite3 /opt/rs01/reserve-room/data/sqlite.db < /opt/rs01/reserve-room/documents/schema.sql
-sqlite3 /opt/rs01/reserve-room/data/sqlite.db < /opt/rs01/reserve-room/documents/data.sql
+sqlite3 /opt/rs01/reserve-room/data/sqlite.db < /opt/rs01/reserve-room/documents/setup/schema.sql
+sqlite3 /opt/rs01/reserve-room/data/sqlite.db < /opt/rs01/reserve-room/documents/setup/data.sql
 
 # 外部モジュール最新化
 cd /opt/rs01/reserve-room/

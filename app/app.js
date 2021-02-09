@@ -33,5 +33,6 @@ app.use(express.urlencoded({ extended: false }));
 /* ルーティング設定 */
 app.use('/', router);
 app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../documents')));
 
 module.exports = app;

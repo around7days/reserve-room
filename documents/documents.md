@@ -12,6 +12,7 @@
 | 開発言語           | Javascript, HTML, CSS, SQL          |                                   |
 | 開発フレームワーク | Node.js, Express, JQuery, BootStrap | いつか JQuery ⇒ Vue.js に変更予定 |
 | データベース       | SQLite                              | https://www.sqlite.org/index.html |
+| その他             | MDWiki                              | 設計書、マニュアルに利用          |
 
 <div style="page-break-before:always"></div>
 
@@ -19,7 +20,7 @@
 
 ### 日次スケジュール画面
 
-<img src="./documents-screen01.png" style="zoom: 80%;" />
+<img src="./documents-screen01.png" style="zoom:80%;" />
 
 ### 一覧スケジュール画面
 

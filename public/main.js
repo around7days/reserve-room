@@ -137,7 +137,7 @@ $(function () {
     // データレイアウトの加工
     reserveList.forEach((data) => {
       data['date_range'] =
-        moment(data['start_time']).format('YYYY/MM/DD') +
+        moment(data['start_time']).format('YYYY/MM/DD(ddd)') +
         ' ' +
         moment(data['start_time']).format('HH:mm') +
         '-' +

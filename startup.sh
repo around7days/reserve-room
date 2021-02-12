@@ -1,10 +1,11 @@
-#bin/bash
+#!/bin/bash
 
-cd /opt/rs01/reserve-room/
+cd `dirname $0`
 
 # アプリ起動
 node app/app.js &
-pid=$1
 
 # プロセスIDの保存
-echo ${pid} > app.pid
+echo $! > app.pid
+
+exit 0

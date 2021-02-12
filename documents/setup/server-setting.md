@@ -1,6 +1,7 @@
 # CentOS 環境セットアップ
 
-## rootユーザ切換
+## root ユーザ切換
+
 su -
 
 ## ユーザ生成
@@ -31,7 +32,7 @@ yum install -y gcc-c++
 
 ## アプリ配備
 
-FFFTPやWinSCP等で下記フォルダにrs01ユーザでアプリを配備。
+FFFTP や WinSCP 等で下記フォルダに rs01 ユーザでアプリを配備。
 /opt/rs01/reserve-room
 　※data,logs,node_modules フォルダは配備不要。
 
@@ -39,9 +40,9 @@ FFFTPやWinSCP等で下記フォルダにrs01ユーザでアプリを配備。
 
 su - rs01
 
-## shellの実行権限設定
+## shell の実行権限設定
 
-chmod 744 /opt/rs01/reserve-room/*.sh
+chmod 744 /opt/rs01/reserve-room/\*.sh
 
 ## DB セットアップ
 
@@ -56,5 +57,5 @@ npm update
 
 ## アプリ起動・停止
 
-/opt/rs01/reserve-room/app_startup.sh
-/opt/rs01/reserve-room/app_shutdown.sh
+/opt/rs01/reserve-room/startup.sh
+/opt/rs01/reserve-room/shutdown.sh

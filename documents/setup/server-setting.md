@@ -1,61 +1,56 @@
 # CentOS 環境セットアップ
 
-## root ユーザ切換
+## 環境設定
+```sh
+# root ユーザ切換
+$ su -
 
-su -
+# ユーザ生成
+$ useradd rs01
+$ passwd rs01
 
-## ユーザ生成
+# 配備先フォルダ生成
+$ mkdir -p /opt/rs01/reserve-room
+$ chown -R rs01:rs01 /opt/rs01
 
-useradd rs01
-passwd rs01
+# nodejs, npm のインストール
+$ yum install -y https://rpm.nodesource.com/pub_14.x/el/7/x86_64/nodesource-release-el7-1.noarch.rpm
+$ yum install -y nodejs npm
 
-## 配備先フォルダ生成
+# sqlite のインストール（入ってなければ）
+$ yum install -y sqlite
 
-mkdir -p /opt/rs01/reserve-room
-chown -R rs01:rs01 /opt/rs01
-
-## nodejs, npm のインストール
-
-yum install -y https://rpm.nodesource.com/pub_14.x/el/7/x86_64/nodesource-release-el7-1.noarch.rpm
-yum install -y nodejs npm
-
-## sqlite のインストール（入ってなければ）
-
-yum install -y sqlite
-
-## C++コンパイラのインストール（入ってなければ）
-
-yum install -y centos-release-scl ※要らないかも・・・
-yum install -y gcc-c++
-
-# アプリセットアップ
+# C++コンパイラのインストール（入ってなければ）
+# ※要らないかも・・・
+$ yum install -y centos-release-scl
+$ yum install -y gcc-c++
+```
 
 ## アプリ配備
+```sh
+# ---------------------------------------------------------
+# 事前にWinSCP等で下記フォルダにrs01ユーザでアプリを配備。
+# /opt/rs01/reserve-room
+# 　※data,logs,node_modules フォルダは配備不要。
+# ---------------------------------------------------------
 
-FFFTP や WinSCP 等で下記フォルダに rs01 ユーザでアプリを配備。
-/opt/rs01/reserve-room
-　※data,logs,node_modules フォルダは配備不要。
+# ユーザ切換
+$ su - rs01
 
-## ユーザ切換
+# アプリディレクトリに移動
+$ cd /opt/rs01/reserve-room
 
-su - rs01
+# 外部モジュール最新化
+$ npm update
 
-## shell の実行権限設定
+# DBセットアップ
+$ mkdir data
+$ sqlite3 ./data/sqlite.db < ./documents/setup/schema.sql
+$ sqlite3 ./data/sqlite.db < ./documents/setup/data.sql
 
-chmod 744 /opt/rs01/reserve-room/\*.sh
+# shell の実行権限設定
+$ chmod 744 ./*.sh
 
-## DB セットアップ
-
-mkdir /opt/rs01/reserve-room/data
-sqlite3 /opt/rs01/reserve-room/data/sqlite.db < /opt/rs01/reserve-room/documents/setup/schema.sql
-sqlite3 /opt/rs01/reserve-room/data/sqlite.db < /opt/rs01/reserve-room/documents/setup/data.sql
-
-## 外部モジュール最新化
-
-cd /opt/rs01/reserve-room/
-npm update
-
-## アプリ起動・停止
-
-/opt/rs01/reserve-room/startup.sh
-/opt/rs01/reserve-room/shutdown.sh
+# アプリ起動・停止
+$ /opt/rs01/reserve-room/startup.sh
+```

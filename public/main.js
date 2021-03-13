@@ -19,8 +19,6 @@ $(function () {
     createScheduleDaily();
     // 一覧スケジュールの生成
     createScheduleList();
-    // 予約カードの作成
-    createCardAll();
     // 予情報フォームの生成
     createReserveForm();
     // 個人情報設定フォームの生成
@@ -300,8 +298,8 @@ $(function () {
       $('#scheduleListArea').show();
       calender.disabled(true);
     }
-    // スケジュールのリフレッシュ
-    refreshSchedule();
+    // カレンダーを当日に変更
+    calender.setToday();
   }
 
   /**

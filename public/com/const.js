@@ -6,7 +6,7 @@ const SERVER_URL = ''; // 本番用設定
 const SETTING = {
   schedule_define: {
     start_time: '08:00',
-    end_time: '23:00',
+    end_time: '22:00',
     interval: '30',
   },
 };

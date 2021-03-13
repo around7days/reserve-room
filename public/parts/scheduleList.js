@@ -17,7 +17,7 @@ class ScheduleListClass {
     // テーブル要素の生成
     this.$schedule = $(`
       <div class="pt-1">
-        <h5>全予約情報</h5>
+        <h5>全予約情報一覧</h5>
       </div>
       <div>
         <table class="table table-sm table-bordered table-hover" style="width:100%">

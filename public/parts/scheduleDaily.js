@@ -11,6 +11,7 @@ class ScheduleDailyClass {
     this.dragRoomId;
     this.dragStartTime;
     this.dragEndTime;
+    this.clickStartTime;
     this.dropCallback;
   }
 
@@ -247,14 +248,19 @@ class ScheduleDailyClass {
   }
 
   /**
-   * ドロップイベントのコールバックセット
+   * ドラッグ＆ドロップイベント（コールバック設定）
    */
   setDropCallback(callback) {
     this.dropCallback = callback;
     return this;
   }
 
-  /** Mousedown */
+  /**
+   * ドラッグ＆ドロップイベント（doMousedown）
+   * ・ドラッグフラグをON
+   * ・ドラッグした会議室・開始時刻・終了時刻を記憶
+   * ・ドラッグしたセル背景色を変更
+   */
   doMousedown(event) {
     // console.log('doMousedown:' + $(event.target).attr('id'));
     let $target = $(event.target);
@@ -262,17 +268,22 @@ class ScheduleDailyClass {
     this.dragFlg = true;
     let cellData = this.getCellData($target);
     if (cellData == null) {
-      // TODO ★綺麗にする。
+      // セル情報が取得できない範囲をクリックした場合はドラッグ＆ドロップイベントの終了
       this.doMouseleave(event);
       return;
     }
     this.dragRoomId = cellData['room_id'];
     this.dragStartTime = cellData['time'];
+    this.clickStartTime = cellData['time'];
     this.dragEndTime = cellData['time'];
     this.changeColorCellRange(this.dragRoomId, this.dragStartTime, this.dragStartTime);
   }
 
-  /** mousemove */
+  /**
+   * ドラッグ＆ドロップイベント（doMousemove）
+   * ・ドラッグ中に移動先のした先のセル背景色を変更
+   * ・ドラッグ先に終了時刻を更新
+   */
   doMousemove(event) {
     if (!this.dragFlg) {
       return;
@@ -281,16 +292,30 @@ class ScheduleDailyClass {
     let $target = $(event.target);
     let cellData = this.getCellData($target);
     if (cellData == null) {
-      // TODO ★綺麗にする。
+      // セル情報が取得できない範囲に移動した場合はドラッグ＆ドロップイベントの終了
       this.doMouseleave(event);
       return;
     }
 
-    this.dragEndTime = cellData['time'];
+    // クリック時点のセルから反映先の時刻情報を判定
+    if (this.clickStartTime == cellData['time']) {
+      this.dragStartTime = cellData['time'];
+      this.dragEndTime = cellData['time'];
+    } else if (this.clickStartTime < cellData['time']) {
+      this.dragEndTime = cellData['time'];
+    } else {
+      this.dragStartTime = cellData['time'];
+    }
+
     this.changeColorCellRange(this.dragRoomId, this.dragStartTime, this.dragEndTime);
   }
 
-  /** mouseup */
+  /**
+   * ドラッグ＆ドロップイベント（doMouseup）
+   * ・ドラッグ＆ドロップイベントの終了
+   * ・セル背景色を元に戻す
+   * ・コールバックイベントの実行
+   */
   doMouseup(event) {
     if (!this.dragFlg) {
       return;
@@ -309,7 +334,11 @@ class ScheduleDailyClass {
     this.dropCallback(data);
   }
 
-  /** mouseleave */
+  /**
+   * ドラッグ＆ドロップイベント（doMouseleave）
+   * ・ドラッグ＆ドロップイベントの終了
+   * ・セル背景色を元に戻す
+   */
   doMouseleave(event) {
     if (!this.dragFlg) {
       return;

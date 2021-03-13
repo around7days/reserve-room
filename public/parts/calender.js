@@ -17,7 +17,10 @@ class CalenderClass {
   create() {
     this.$calender = $(`
       <div>
-        <h5>カレンダー</h5>
+        <span class="h5">
+          カレンダー
+          <a data-id="refresh" class="material-icons">refresh</a>
+        </span>
         <div data-id="datepicker"></div>
       </div>
     `);
@@ -25,12 +28,20 @@ class CalenderClass {
 
     // カレンダー設定
     this.$datepicker.datepicker({
+      format: 'yyyy-mm-dd',
       language: 'ja',
       daysOfWeekHighlighted: [0, 6],
       todayHighlight: true,
       weekStart: 1,
       maxViewMode: 'days',
     });
+
+    // リフレッシュボタン設定
+    this.$calender
+      .find('[data-id=refresh]')
+      .css('font-size', '100%')
+      .css('cursor', 'pointer')
+      .on('click', () => this.setToday());
 
     return this;
   }
@@ -59,7 +70,7 @@ class CalenderClass {
    * @returns 自身のクラス
    */
   setDate(date) {
-    this.$datepicker.datepicker('setDate', date.format('yyyy-mm-dd'));
+    this.$datepicker.datepicker('setDate', date.toDate());
     return this;
   }
 
@@ -73,12 +84,21 @@ class CalenderClass {
   }
 
   /**
+   * 当日選択
+   * @returns 自身のクラス
+   */
+  setToday() {
+    this.setDate(moment());
+    return this;
+  }
+
+  /**
    * 前日選択
    * @returns 自身のクラス
    */
   setPrevDate() {
-    let date = getDate().add(-1, 'd');
-    setDate(date);
+    let date = this.getDate().add(-1, 'days');
+    this.setDate(date);
     return this;
   }
 
@@ -87,8 +107,8 @@ class CalenderClass {
    * @returns 自身のクラス
    */
   setNextDate() {
-    let date = getDate().add(1, 'd');
-    setDate(date);
+    let date = this.getDate().add(1, 'days');
+    this.setDate(date);
     return this;
   }
 

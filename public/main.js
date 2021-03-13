@@ -151,7 +151,6 @@ $(function () {
     scheduleList.destory();
     scheduleList
       .create()
-      .setDate(today) // 日付設定
       .setDataTables(reserveList, showReserveFormUpdate) // 行データ設定＋行クリック時に予約情報フォームの表示
       .render($('#scheduleListArea'));
   }
@@ -284,7 +283,6 @@ $(function () {
 
     // 一覧スケジュール
     if ($('#scheduleListArea').css('display') != 'none') {
-      scheduleList.setDate(getTargetDate());
       createScheduleList();
     }
   }

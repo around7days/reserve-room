@@ -17,7 +17,7 @@ class ScheduleListClass {
     // テーブル要素の生成
     this.$schedule = $(`
       <div class="pt-1">
-        <h5 data-id="dispDate"></h5>
+        <h5>全予約情報</h5>
       </div>
       <div>
         <table class="table table-sm table-bordered table-hover" style="width:100%">
@@ -53,17 +53,6 @@ class ScheduleListClass {
    */
   get() {
     return this.$schedule;
-  }
-
-  /**
-   * 日付の設定
-   * @param date 日付
-   * @returns 自身のクラス
-   */
-  setDate(date) {
-    let dispDate = date.format('YYYY年MM月DD日（ddd）');
-    this.$schedule.find('[data-id=dispDate]').text(dispDate);
-    return this;
   }
 
   /**

@@ -37,16 +37,17 @@ $(function () {
     let $ele = $(`
       <!-- カレンダー -->
       <div>
-        <h5>カレンダー</h5>
-        <div data-id="datepicker"></div>
+        <div data-id=calender></div>
       </div>
       <hr class="pt-1" />
+
       <!-- 個人設定 -->
       <div>
         <h5>個人設定</h5>
-        <button id="userSettingBtn" class="btn btn-outline-primary btn-sm">表示</button>
+        <button data-id="userSettingBtn" class="btn btn-outline-primary btn-sm">表示</button>
       </div>
       <hr class="pt-1" />
+      
       <!-- 表示切替 -->
       <div>
         <h5>表示切替</h5>
@@ -62,21 +63,17 @@ $(function () {
     `);
     $('#sideArea').append($ele);
 
-    // カレンダー設定
-    $ele.find('[data-id=datepicker]').datepicker({
-      firstDay: 1,
-      dateFormat: 'yy-mm-dd',
-      showOtherMonths: true,
-      selectOtherMonths: true,
-      minDate: -30,
-      onSelect: function (dateText, inst) {
-        let date = moment(dateText);
-        // 日付の再設定
-        setTargetDate(date);
-        // スケジュールのリフレッシュ
-        refreshSchedule();
-      },
-    });
+    // カレンダーの日付変更時のコールバック設定
+    let changeDateEvent = (date) => {
+      // 日付の再設定
+      setTargetDate(date);
+      // スケジュールのリフレッシュ
+      refreshSchedule();
+    };
+
+    // カレンダー生成
+    let $calender = $('[data-id=calender]'); // TODO $ele.findにすると何故か動かない・・・
+    calender.create().setChangeDateEvent(changeDateEvent).render($calender);
 
     // スケジュール表示切替設定
     $ele.find('[data-id=dispSwitch]').on('change', (e) => {
@@ -84,7 +81,7 @@ $(function () {
     });
 
     // 個人設定ボタン押下イベント設定
-    $('#userSettingBtn').on('click', showUserSettingForm);
+    $ele.find('[data-id=userSettingBtn]').on('click', showUserSettingForm);
   }
 
   /**
@@ -296,17 +293,19 @@ $(function () {
       // 日次スケジュール表示
       $('#scheduleDailyArea').show();
       $('#scheduleListArea').hide();
+      calender.disabled(false);
     } else {
       // 一覧スケジュール表示
       $('#scheduleDailyArea').hide();
       $('#scheduleListArea').show();
+      calender.disabled(true);
     }
     // スケジュールのリフレッシュ
     refreshSchedule();
   }
 
   /**
-   * 対象日付表示
+   * 対象日付設定
    * @param targetDate 対象日付
    */
   function setTargetDate(targetDate) {

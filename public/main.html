@@ -8,17 +8,20 @@
     <!-- jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <!-- jquery ui -->
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/redmond/jquery-ui.css" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script src="https://rawgit.com/jquery/jquery-ui/master/ui/i18n/datepicker-ja.js"></script>
-
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/yeti/bootstrap.min.css" />
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/flatly/bootstrap.min.css" /> -->
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/sandstone/bootstrap.min.css" /> -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Bootstrap datetpicker -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ja.min.js"></script>
+
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet" />
 
     <!-- DataTables(Bootstrap 4 + Buttons(HTML5 export + JSZip)) -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
@@ -47,6 +50,7 @@
     <script src="./parts/reserveForm.js"></script>
     <script src="./parts/scheduleDaily.js"></script>
     <script src="./parts/scheduleList.js"></script>
+    <script src="./parts/calender.js"></script>
   </head>
   <body>
     <!-- ヘッダ -->
@@ -69,12 +73,12 @@
             <div id="sideArea"></div>
           </div>
         </div>
-      </div>
-      <!-- メインコンテンツ -->
-      <div class="col-9 offset-3">
-        <div class="pt-4">
-          <div id="scheduleDailyArea"></div>
-          <div id="scheduleListArea"></div>
+        <!-- メインコンテンツ -->
+        <div class="col-9 offset-3">
+          <div class="pt-4">
+            <div id="scheduleDailyArea"></div>
+            <div id="scheduleListArea"></div>
+          </div>
         </div>
       </div>
     </div>

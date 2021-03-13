@@ -6,7 +6,7 @@ class ReserveCardClass {
    * コンストラクタ
    */
   constructor() {
-    this.card = null;
+    this.$card;
   }
 
   /**
@@ -16,9 +16,9 @@ class ReserveCardClass {
   create() {
     this.$card = $(`
       <div class="card reserve-card overflow-hidden">
-          <div class="card-body">
-              <p class="card-text"></p>
-          </div>
+        <div class="card-body">
+          <p class="card-text"></p>
+        </div>
       </div>
     `);
     return this;

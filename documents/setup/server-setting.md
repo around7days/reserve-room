@@ -1,11 +1,12 @@
 # CentOS 環境セットアップ
 
 ## 環境設定
+
 ```sh
 # root ユーザ切換
 $ su -
 
-# ユーザ生成
+# アプリユーザ生成
 $ useradd rs01
 $ passwd rs01
 
@@ -20,6 +21,9 @@ $ yum install -y nodejs npm
 # sqlite のインストール（入ってなければ）
 $ yum install -y sqlite
 
+# Git のインストール（入ってなければ）
+$ yum install -y git
+
 # C++コンパイラのインストール（入ってなければ）
 # ※要らないかも・・・
 $ yum install -y centos-release-scl
@@ -27,15 +31,16 @@ $ yum install -y gcc-c++
 ```
 
 ## アプリ配備
-```sh
-# ---------------------------------------------------------
-# 事前にWinSCP等で下記フォルダにrs01ユーザでアプリを配備。
-# /opt/rs01/reserve-room
-# 　※data,logs,node_modules フォルダは配備不要。
-# ---------------------------------------------------------
 
+```sh
 # ユーザ切換
 $ su - rs01
+
+# アプリ配備先に移動
+$ cd /opt/rs01
+
+# GitHubからアプリをclone
+$ git clone https://github.com/around7days/reserve-room.git
 
 # アプリディレクトリに移動
 $ cd /opt/rs01/reserve-room

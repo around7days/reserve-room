@@ -34,6 +34,16 @@ class CalenderClass {
       todayHighlight: true,
       weekStart: 1,
       maxViewMode: 'days',
+      beforeShowDay: function (date) {
+        // 祝日設定
+        let holiday = JapaneseHolidays.isHoliday(date);
+        if (holiday) {
+          return {
+            classes: 'calender-holiday',
+            tooltip: holiday,
+          };
+        }
+      },
     });
 
     // リフレッシュボタン設定

@@ -19,7 +19,7 @@ class CalenderClass {
       <div>
         <span class="h5">
           カレンダー
-          <a data-id="refresh" class="material-icons">refresh</a>
+          <a data-id="refresh" class="bi-arrow-clockwise"></a>
         </span>
         <div data-id="datepicker"></div>
       </div>
